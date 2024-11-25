@@ -145,7 +145,6 @@ class TractionController:
     def issue_vc(self, credential):
         settings.LOGGER.info("Issuing Credential")
         did = credential.get('issuer') if isinstance(credential.get('issuer'), str) else credential.get('issuer').get('id')
-        did = credential["issuer"]["id"]
         if did.startswith('did:web:'):
             verification_method = f"{did}#{self.default_kid}-multikey"
         elif did.startswith('did:key:'):
