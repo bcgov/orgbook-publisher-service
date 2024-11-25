@@ -32,11 +32,11 @@ class OrgbookPublisher:
             "version": credential_registration["version"],
             "verificationMethods": [verification_method],
             "cardinality": [
-                {"path": credential_registration["core_paths"]["cardinalityId"]},
+                {"path": credential_registration["corePaths"]["cardinalityId"]},
             ],
             "topic": {
                 "type": "registration.registries.ca",
-                "sourceId": {"path": credential_registration["core_paths"]["entityId"]},
+                "sourceId": {"path": credential_registration["corePaths"]["entityId"]},
             },
             "mappings": [
                 {"path": "$.validFrom", "type": "effective_date", "name": "validFrom"},
