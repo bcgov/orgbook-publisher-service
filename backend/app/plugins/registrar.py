@@ -310,6 +310,7 @@ class PublisherRegistrar:
             credentialSubject=credential.get('credentialSubject'),
             credentialStatus=credential.get('credentialStatus'),
         ).model_dump()
+        credential['@context'] = credential_template.get('@context')
 
         return credential
 

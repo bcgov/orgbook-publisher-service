@@ -67,7 +67,17 @@ async def publish_credential(request_body: Publication):
         traction = TractionController()
         traction.authorize()
         vc = traction.issue_vc(credential)
+        if not vc:
+            raise HTTPException(
+                status_code=500,
+                detail="Unexpected error occured while trying to issue the credential.",
+            )
         vc_jwt = traction.sign_vc_jwt(vc)
+        if not vc_jwt:
+            raise HTTPException(
+                status_code=500,
+                detail="Unexpected error occured while trying to issue the credential.",
+            )
         
         await OrgbookPublisher().forward_credential(vc, credential_registration)
         
