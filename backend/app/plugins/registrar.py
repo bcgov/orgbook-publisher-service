@@ -300,7 +300,7 @@ class PublisherRegistrar:
             pass
 
         credential = Credential(
-            context=credential.get('@context'),
+            # context=credential.get('@context'),
             type=credential.get('type'),
             id=credential.get('id'),
             name=credential.get('name'),
