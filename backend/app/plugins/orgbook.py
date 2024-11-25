@@ -31,10 +31,9 @@ class OrgbookPublisher:
             "issuer": credential_registration["issuer"],
             "version": credential_registration["version"],
             "verificationMethods": [verification_method],
-            # "ocaBundle": {},
-            # "cardinality": [
-            #     {"path": credential_registration["core_paths"]["cardinalityId"]},
-            # ],
+            "cardinality": [
+                {"path": credential_registration["core_paths"]["cardinalityId"]},
+            ],
             "topic": {
                 "type": "registration.registries.ca",
                 "sourceId": {"path": credential_registration["core_paths"]["entityId"]},
