@@ -1,0 +1,130 @@
+---
+nameOverride: "orgbook-publisher"
+fullnameOverride: "orgbook-publisher"
+
+selectorLabels: {}
+
+ingress:
+  tls: false
+  labels: []
+  annotations: []
+
+networkPolicy:
+  ingress:
+    namespaceSelector: []
+
+backend:
+  image:
+    repository: ghcr.io/OpSecId/orgbook-publisher
+    tag: 0.0.1
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+  # host is required when enabling TLS in the ingress
+  # host: publisher.myapp.example
+
+  environment:
+    TRACTION_API_URL: ""
+    TRACTION_API_KEY: ""
+    TRACTION_TENANT_ID: ""
+    ORGBOOK_URL: ""
+    TDW_SERVER_URL: ""
+    TDW_ENDORSER_MULTIKEY: ""
+
+  replicaCount: 1
+
+  podAnnotations: {}
+  podSecurityContext: {}
+  containerSecurityContext: {}
+
+  service:
+    type: ClusterIP
+    apiPort: 8000
+    servicePort: 8000
+
+  resources:
+    limits:
+      cpu: 100m
+      memory: 512Mi
+    requests:
+      cpu: 10m
+      memory: 128Mi
+
+  networkPolicy:
+    ingress:
+      podSelector: {}
+
+##  Overrides for bitnami/mongodb chart - https://github.com/bitnami/charts/tree/main/bitnami/mongodb
+mongodb:
+  auth:
+    ## @param mongodb.auth.enabled Enable authentication
+    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
+    ##
+    enabled: true
+    ## @param mongodb.auth.existingSecret Existing secret with MongoDB(&reg;) credentials (keys: `mongodb-passwords`, `mongodb-root-password`, `mongodb-metrics-password`, `mongodb-replica-set-key`)
+    ## NOTE: When it's set the previous parameters are ignored.
+    ##
+    existingSecret: '{{ include "global.fullname" . }}'
+    ## MongoDB(&reg;) custom users and databases
+    ## ref: https://github.com/bitnami/containers/tree/main/bitnami/mongodb#creating-a-user-and-database-on-first-run
+    ## @param mongodb.auth.usernames List of custom users to be created during the initialization
+    ## @param mongodb.auth.databases List of custom databases to be created during the initialization
+    ##
+    username: "orgbook-publisher"
+    database: "orgbook-publisher"
+  ## @param mongodb.commonLabels [array] Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
+  ##
+  commonLabels:
+    app: orgbook-publisher
+    role: database
+  ## @param mongodb.image.registry image registry
+  image:
+    registry: artifacts.developer.gov.bc.ca/docker-remote
+  ## @param mongodb.architecture MongoDB(&reg;) architecture (`standalone` or `replicaset`)
+  ##
+  architecture: replicaset
+  ## MongoDB(&reg;) containers' Security Context (main and metrics container).
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
+  ## @param mongodb.containerSecurityContext.enabled Enable MongoDB(&reg;) container(s)' Security Context
+  ##
+  containerSecurityContext:
+    enabled: false
+  ## MongoDB(&reg;) pods' Security Context.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
+  ## @param mongodb.podSecurityContext.enabled Enable MongoDB(&reg;) pod(s)' Security Context
+  podSecurityContext:
+    enabled: false
+  ## Enable persistence using Persistent Volume Claims
+  ## ref: https://kubernetes.io/docs/user-guide/persistent-volumes/
+  ##
+  persistence:
+    ## @param mongodb.persistence.enabled Enable MongoDB(&reg;) data persistence using PVC
+    ##
+    enabled: true
+    ## @param mongodb.persistence.storageClass PVC Storage Class for MongoDB(&reg;) data volume
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ## set, choosing the default provisioner.
+    ##
+    storageClass: netapp-block-standard
+  ## ServiceAccount
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
+  ##
+  serviceAccount:
+    ## @param mongodb.serviceAccount.create Enable creation of ServiceAccount for MongoDB(&reg;) pods
+    ##
+    create: false
+  arbiter:
+    ## @param mongodb.arbiter.enabled Enable deploying the arbiter
+    ##   https://docs.mongodb.com/manual/tutorial/add-replica-set-arbiter/
+    ##
+    enabled: false
+  hidden:
+    ## @param mongodb.hidden.enabled Enable deploying the hidden nodes
+    ##   https://docs.mongodb.com/manual/tutorial/configure-a-hidden-replica-set-member/
+    ##
+    enabled: false
+  metrics:
+    ## @param mongodb.metrics.enabled Enable using a sidecar Prometheus exporter
+    ##
+    enabled: false
