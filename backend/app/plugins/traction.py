@@ -128,7 +128,7 @@ class TractionController:
         return self._try_response(r, "kid")
 
     def sign_vc_jwt(self, document):
-        did = document["issuer"]["id"]
+        did = document.get('issuer') if isinstance(document.get('issuer'), str) else document.get('issuer').get('id')
         verification_method = f"{did}#{self.default_kid}-jwk"
         r = requests.post(
             f"{self.endpoint}/wallet/jwt/sign",
@@ -144,6 +144,7 @@ class TractionController:
 
     def issue_vc(self, credential):
         settings.LOGGER.info("Issuing Credential")
+        did = credential.get('issuer') if isinstance(credential.get('issuer'), str) else credential.get('issuer').get('id')
         did = credential["issuer"]["id"]
         if did.startswith('did:web:'):
             verification_method = f"{did}#{self.default_kid}-multikey"
