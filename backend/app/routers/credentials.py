@@ -131,6 +131,11 @@ async def refresh_credential(type: str, entity: str, cardinality: str, request: 
 async def get_credential(credential_id: str, request: Request):
     mongo = MongoClient()
     credential_record = mongo.find_one("CredentialRecord", {"id": credential_id})
+    if not credential_record:
+        raise HTTPException(
+            status_code=404,
+            detail="No record found.",
+        )
     vc = credential_record["vc"]
     vc_jwt = credential_record["vc_jwt"]
     if "application/vc+jwt" in request.headers["accept"]:
@@ -168,6 +173,11 @@ async def get_status_list_credential(status_credential_id: str, request: Request
     status_list_record = mongo.find_one(
         "StatusListRecord", {"id": status_credential_id}
     )
+    if not status_list_record:
+        raise HTTPException(
+            status_code=404,
+            detail="No record found.",
+        )
     status_list_credential = status_list_record["credential"]
     status_list_credential["validFrom"] = timestamp()
     status_list_credential["validUntil"] = timestamp(5)
