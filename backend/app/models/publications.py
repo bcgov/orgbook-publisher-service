@@ -24,7 +24,7 @@ class PublicationCredential(BaseModel):
 
 class PublicationOptions(BaseModel):
     entityId: str = Field(example="A0131571")
-    credentialId: str = Field(str(uuid.uuid4()), example=str(uuid.uuid4()))
+    credentialId: str = Field(None, example=str(uuid.uuid4()))
     cardinalityId: str = Field(example="65338")
     additionalData: dict = Field(
         None,
