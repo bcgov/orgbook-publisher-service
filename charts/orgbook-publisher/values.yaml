@@ -62,8 +62,8 @@ mongodb:
     ## @param mongodb.auth.usernames List of custom users to be created during the initialization
     ## @param mongodb.auth.databases List of custom databases to be created during the initialization
     ##
-    username: "orgbook-publisher"
-    database: "orgbook-publisher"
+    usernames: ["orgbook-publisher"]
+    databases: ["orgbook-publisher"]
   ## @param mongodb.commonLabels [array] Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
   ##
   commonLabels:
