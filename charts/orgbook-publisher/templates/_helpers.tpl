@@ -66,31 +66,10 @@ app.kubernetes.io/name: {{ include "backend.fullname" . }}
 {{- end -}}
 
 
-
-{{/*
-Returns a secret if it already in Kubernetes, otherwise it creates
-it randomly.
-
-Usage:
-{{ include "getOrGeneratePass" (dict "Namespace" .Release.Namespace "Kind" "Secret" "Name" (include "vc-authn-oidc.databaseSecretName" .) "Key" "mongodb-root-password" "Length" 32) }}
-
-*/}}
-{{- define "getOrGeneratePass" }}
-{{- $len := (default 16 .Length) | int -}}
-{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
-{{- if $obj }}
-{{- index $obj .Key -}}
-{{- else if (eq (lower .Kind) "secret") -}}
-{{- randAlphaNum $len | b64enc -}}
-{{- else -}}
-{{- randAlphaNum $len -}}
-{{- end -}}
-{{- end }}
-
 {{/*
 Define the name of the database secret to use
 */}}
-{{- define "orgbook-publisher.databaseSecretName" -}}
+{{- define "backend.databaseSecretName" -}}
 {{- if (empty .Values.database.existingSecret) -}}
 {{- printf "%s-%s" .Release.Name "mongodb" | trunc 63 | trimSuffix "-" }}
 {{- else -}}
@@ -101,7 +80,7 @@ Define the name of the database secret to use
 {{/*
 Return true if a database secret should be created
 */}}
-{{- define "orgbook-publisher.database.createSecret" -}}
+{{- define "backend.database.createSecret" -}}
 {{- if not .Values.database.existingSecret -}}
 {{- true -}}
 {{- end -}}
