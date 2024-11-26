@@ -36,12 +36,10 @@ class Settings(BaseSettings):
     JWT_SECRET: str = TRACTION_API_KEY
     JWT_ALGORITHM: str = "HS256"
 
-
     MONGO_HOST: str = os.getenv("MONGO_HOST")
     MONGO_PORT: str = os.getenv("MONGO_PORT")
     MONGO_USER: str = os.getenv("MONGO_USER")
     MONGO_PASSWORD: str = os.getenv("MONGO_PASSWORD")
-    MONGO_DB: str = f'mongodb://{MONGO_USER}:{MONGO_PASSWORD}@{MONGO_HOST}:{MONGO_PORT}/'
-
+    MONGO_DB: str = os.getenv("MONGO_DB")
 
 settings = Settings()

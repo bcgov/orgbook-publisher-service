@@ -63,8 +63,13 @@ spec:
               value: {{ .Values.mongodb.service.ports.mongodb | quote }}
             - name: MONGO_USER
               value: {{ first .Values.mongodb.auth.usernames }}
+            - name: MONGO_DB
+              value: {{ first .Values.mongodb.auth.databases }}
             - name: MONGO_PASSWORD
-              value: {{ first .Values.mongodb.auth.passwords }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "backend.databaseSecretName" . }}
+                  key: mongodb-passwords
           ports:
             - name: api
               containerPort: {{ .Values.backend.service.apiPort }}

@@ -19,7 +19,7 @@ networkPolicy:
 backend:
   image:
     repository: ghcr.io/bcgov/orgbook-publisher-service
-    tag: v0.0.1
+    tag: v0.0.2
     pullPolicy: IfNotPresent
     pullSecrets: []
 
@@ -63,7 +63,6 @@ mongodb:
     ## @param mongodb.auth.databases List of custom databases to be created during the initialization
     ##
     usernames: ["orgbook-publisher"]
-    passwords: ["publisher-s3cret"]
     databases: ["orgbook-publisher"]
   ## @param mongodb.commonLabels [array] Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
   ##
