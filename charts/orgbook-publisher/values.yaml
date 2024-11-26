@@ -4,6 +4,9 @@ fullnameOverride: "orgbook-publisher"
 
 selectorLabels: {}
 
+database:
+  existingSecret: ''
+
 ingress:
   tls: false
   labels: []
@@ -15,20 +18,10 @@ networkPolicy:
 
 backend:
   image:
-    repository: ghcr.io/OpSecId/orgbook-publisher
-    tag: 0.0.1
+    repository: ghcr.io/bcgov/orgbook-publisher-service
+    tag: v0.0.1
     pullPolicy: IfNotPresent
     pullSecrets: []
-  # host is required when enabling TLS in the ingress
-  # host: publisher.myapp.example
-
-  environment:
-    TRACTION_API_URL: ""
-    TRACTION_API_KEY: ""
-    TRACTION_TENANT_ID: ""
-    ORGBOOK_URL: ""
-    TDW_SERVER_URL: ""
-    TDW_ENDORSER_MULTIKEY: ""
 
   replicaCount: 1
 
