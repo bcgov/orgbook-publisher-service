@@ -56,7 +56,7 @@ spec:
 
             # MONGODB
             - name: MONGO_HOST
-              value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"
+              value: "{{ .Release.Name }}-mongodb"
             - name: MONGO_PORT
               value: {{ .Values.mongodb.service.ports.mongodb | quote }}
             - name: MONGO_USER
@@ -65,7 +65,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.mongodb.nameOverride }}
-                  key: password
+                  key: mongodb-passwords
           ports:
             - name: api
               containerPort: {{ .Values.backend.service.apiPort }}
