@@ -42,12 +42,12 @@ spec:
             - name: TRACTION_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.backend.fullname }}
+                  name: {{ include "backend.fullname" . }}
                   key: traction_api_key
             - name: TRACTION_TENANT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.backend.fullname }}
+                  name: {{ include "backend.fullname" . }}
                   key: traction_tenant_id
 
             # DID WEB SERVER
