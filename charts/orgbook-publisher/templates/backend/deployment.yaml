@@ -65,7 +65,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.mongodb.nameOverride }}
-                  key: password
+                  key: mongodb-passwords
           ports:
             - name: api
               containerPort: {{ .Values.backend.service.apiPort }}
