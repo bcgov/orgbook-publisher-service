@@ -58,7 +58,7 @@ spec:
 
             # MONGODB
             - name: MONGO_HOST
-              value: "{{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc.cluster.local"
+              value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"
             - name: MONGO_PORT
               value: {{ .Values.mongodb.service.ports.mongodb | quote }}
             - name: MONGO_USER
