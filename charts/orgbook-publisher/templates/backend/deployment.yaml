@@ -56,7 +56,7 @@ spec:
 
             # MONGODB
             - name: MONGO_HOST
-              value: "{{ .Release.Name }}-mongodb.{{ .Release.Namespace }}.svc"
+              value: "{{ .Release.Name }}-mongodb"
             - name: MONGO_PORT
               value: {{ .Values.mongodb.service.ports.mongodb | quote }}
             - name: MONGO_USER
