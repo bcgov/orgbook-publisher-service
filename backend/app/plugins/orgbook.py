@@ -55,12 +55,12 @@ class OrgbookPublisher:
         request_body = {"securedDocument": signed_vc_type}
 
         r = requests.post(f"{self.vc_service}/credential-types", json=request_body)
-        try:
+        if r.status_code == 201:
             return r.json()
-        except:
-            raise HTTPException(
-                status_code=400, detail="Couldn't register credential type."
-            )
+
+        raise HTTPException(
+            status_code=r.status_code, detail="Couldn't register credential type with vc service."
+        )
 
     async def forward_credential(self, vc, credential_registration):
         payload = {
@@ -73,9 +73,9 @@ class OrgbookPublisher:
             },
         }
         r = requests.post(f"{self.vc_service}/credentials", json=payload)
-        try:
+        if r.status_code == 201:
             return r.json()
-        except:
-            raise HTTPException(
-                status_code=400, detail="Couldn't register credential type."
-            )
+
+        raise HTTPException(
+            status_code=r.status_code, detail="Couldn't publish credential type with vc service."
+        )

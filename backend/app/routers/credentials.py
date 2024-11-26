@@ -24,10 +24,15 @@ router = APIRouter(prefix="/credentials")
 
 @router.post("/publish", tags=["Client"], dependencies=[Depends(JWTBearer())])
 async def publish_credential(request_body: Publication):
+    settings.LOGGER.info("Publication request")
     credential_input = request_body.model_dump()["credential"]
 
     options = request_body.model_dump()["options"]
-    options["credentialId"] = options.get("credentialId") or str(uuid.uuid4())
+    if not options.get("credentialId"):
+        options["credentialId"] = str(uuid.uuid4())
+        settings.LOGGER.info("No credential id provided, new id generated.")
+        
+    settings.LOGGER.info('Credential Id: ' + options["credentialId"])
     
     mongo = MongoClient()
     
