@@ -31,14 +31,16 @@ spec:
             # PUBLISHER INFO
             - name: DOMAIN
               value: {{ .Values.backend.host }}
+            - name: ORGBOOK_URL
+              value: {{ .Values.backend.environment.ORGBOOK_URL }}
             - name: PUBLISHER_MULTIKEY
-              value: {{ .Values.backend.publisher_multikey }}
+              value: {{ .Values.backend.environment.PUBLISHER_MULTIKEY }}
             - name: ISSUER_REGISTRY_URL
-              value: {{ .Values.backend.issuer_registry_url }}
+              value: {{ .Values.backend.environment.ISSUER_REGISTRY_URL }}
 
             # TRACTION
             - name: TRACTION_API_URL
-              value: {{ .Values.backend.traction_api_url }}
+              value: {{ .Values.backend.environment.TRACTION_API_URL }}
             - name: TRACTION_API_KEY
               valueFrom:
                 secretKeyRef:
@@ -52,7 +54,7 @@ spec:
 
             # DID WEB SERVER
             - name: DID_WEB_SERVER_URL
-              value: {{ .Values.backend.did_web_server_url }}
+              value: {{ .Values.backend.environment.DID_WEB_SERVER_URL }}
 
             # MONGODB
             - name: MONGO_HOST
