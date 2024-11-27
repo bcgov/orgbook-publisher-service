@@ -31,40 +31,44 @@ spec:
             # PUBLISHER INFO
             - name: DOMAIN
               value: {{ .Values.backend.host }}
+            - name: ORGBOOK_URL
+              value: {{ .Values.backend.environment.ORGBOOK_URL }}
             - name: PUBLISHER_MULTIKEY
-              value: {{ .Values.backend.publisher_multikey }}
+              value: {{ .Values.backend.environment.PUBLISHER_MULTIKEY }}
             - name: ISSUER_REGISTRY_URL
-              value: {{ .Values.backend.issuer_registry_url }}
+              value: {{ .Values.backend.environment.ISSUER_REGISTRY_URL }}
 
             # TRACTION
             - name: TRACTION_API_URL
-              value: {{ .Values.backend.traction_api_url }}
+              value: {{ .Values.backend.environment.TRACTION_API_URL }}
             - name: TRACTION_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.backend.fullname }}
+                  name: {{ include "backend.fullname" . }}
                   key: traction_api_key
             - name: TRACTION_TENANT_ID
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.backend.fullname }}
+                  name: {{ include "backend.fullname" . }}
                   key: traction_tenant_id
 
             # DID WEB SERVER
             - name: DID_WEB_SERVER_URL
-              value: {{ .Values.backend.did_web_server_url }}
+              value: {{ .Values.backend.environment.DID_WEB_SERVER_URL }}
 
             # MONGODB
             - name: MONGO_HOST
-              value: "{{ .Release.Name }}-mongodb"
+              value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"
             - name: MONGO_PORT
               value: {{ .Values.mongodb.service.ports.mongodb | quote }}
             - name: MONGO_USER
-              value: {{ .Values.mongodb.auth.username }}
+              value: {{ first .Values.mongodb.auth.usernames }}
+            - name: MONGO_DB
+              value: {{ first .Values.mongodb.auth.databases }}
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.mongodb.nameOverride }}
+                  name: {{ include "backend.databaseSecretName" . }}
                   key: mongodb-passwords
           ports:
             - name: api
