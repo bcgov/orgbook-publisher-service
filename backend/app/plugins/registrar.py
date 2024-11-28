@@ -262,12 +262,12 @@ class PublisherRegistrar:
                         jsonpath_expr.update(credential, value)
 
         # Refresh Service
-        # credential["refreshService"] = [
-        #     {
-        #         'type': 'SupercessionRefresh',
-        #         'id': f'https://{settings.DOMAIN}/credentials/refresh?type={credential_type}&entity={entity_id}&cardinality={cardinality_id}'
-        #     }
-        # ]
+        credential["refreshService"] = [
+            {
+                'type': 'SimpleRefreshQuery',
+                'id': f'https://{settings.DOMAIN}/credentials/refresh?type={credential_type}&entity={entity_id}&cardinality={cardinality_id}'
+            }
+        ]
 
         # Credential Status
         status_list_id = credential_registration["status_lists"][-1]
@@ -300,7 +300,7 @@ class PublisherRegistrar:
             pass
 
         credential = Credential(
-            # context=credential.get('@context'),
+            context=credential_template.get('@context'),
             type=credential.get('type'),
             id=credential.get('id'),
             name=credential.get('name'),
@@ -309,8 +309,9 @@ class PublisherRegistrar:
             validUntil=credential.get('validUntil') or None,
             credentialSubject=credential.get('credentialSubject'),
             credentialStatus=credential.get('credentialStatus'),
+            refreshService=credential.get('refreshService'),
+            renderMethod=credential_template.get('renderMethod'),
         ).model_dump()
-        credential['@context'] = credential_template.get('@context')
 
         return credential
 

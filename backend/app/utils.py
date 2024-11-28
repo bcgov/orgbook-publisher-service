@@ -3,6 +3,7 @@ from multiformats import multibase
 import base64
 import hashlib
 import validators
+from canonicaljson import encode_canonical_json
 import re
 
 
@@ -26,7 +27,7 @@ def timestamp(minutes_forward=0):
     return str((now + delta).isoformat("T", "seconds"))
 
 def generate_digest_multibase(content):
-    return hashlib.sha256(content.encode()).digest()
+    return multibase.encode(hashlib.sha256(encode_canonical_json(content)).digest(), "base58btc")
 
 def verkey_to_multikey(verkey):
     return multibase.encode(bytes.fromhex(f"ed01{multibase.decode(f'z{verkey}').hex()}"), "base58btc")
