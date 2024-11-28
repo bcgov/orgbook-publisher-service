@@ -11,13 +11,12 @@ from app.utils import timestamp
 from app.plugins.orgbook import OrgbookPublisher
 from app.plugins import (
     TractionController,
-    OCAProcessor,
     PublisherRegistrar,
 )
 from app.security import JWTBearer
 import uuid
-import json
 import segno
+import copy
 
 router = APIRouter(prefix="/credentials")
 
@@ -60,13 +59,13 @@ async def publish_credential(request_body: Publication):
         
     # Check cardinality, returns hash if new issuance is required
     cardinality_hash = await PublisherRegistrar().check_cardinality(
-        credential_input=credential_input.copy(), options=options
+        credential_input=copy.deepcopy(credential_input), options=options
     )
         
     if cardinality_hash:
         # Format credential
         credential = await PublisherRegistrar().format_credential(
-            credential_input=credential_input, options=options
+            credential_input=copy.deepcopy(credential_input), options=options
         )
 
         traction = TractionController()
@@ -118,7 +117,7 @@ async def publish_credential(request_body: Publication):
 
 
 
-@router.get("/refresh", tags=["Client"])
+@router.get("/refresh", tags=["Public"])
 async def refresh_credential(type: str, entity: str, cardinality: str, request: Request):
     entity_id = entity
     cardinality_id = cardinality
