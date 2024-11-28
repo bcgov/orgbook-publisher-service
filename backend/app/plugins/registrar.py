@@ -141,29 +141,31 @@ class PublisherRegistrar:
         )
 
         r = requests.post(self.did_web_server, json={"didDocument": endorsed_did_document})
-        try:
-            log_entry = r.json()["logEntry"]
-        except (ValueError, KeyError):
-            raise HTTPException(status_code=r.status_code, detail=r.text)
+        if r.status_code != 201:
+            raise HTTPException(status_code=r.status_code, detail='Error registering DID.')
+        # try:
+        #     log_entry = r.json()["logEntry"]
+        # except (ValueError, KeyError):
+        #     raise HTTPException(status_code=r.status_code, detail=r.text)
 
-        # Sign log entry with authorized key
-        signed_log_entry = traction.add_di_proof(
-            document=log_entry, 
-            options={
-                "type": "DataIntegrityProof",
-                "cryptosuite": "eddsa-jcs-2022",
-                "proofPurpose": "assertionMethod",
-                "verificationMethod": f"did:key:{authorized_key}#{authorized_key}",
-            }
-        )
-        r = requests.post(
-            f"{self.did_web_server}/{namespace}/{identifier}",
-            json={"logEntry": signed_log_entry},
-        )
-        try:
-            log_entry = r.json()
-        except (ValueError, KeyError):
-            raise HTTPException(status_code=r.status_code, detail=r.text)
+        # # Sign log entry with authorized key
+        # signed_log_entry = traction.add_di_proof(
+        #     document=log_entry, 
+        #     options={
+        #         "type": "DataIntegrityProof",
+        #         "cryptosuite": "eddsa-jcs-2022",
+        #         "proofPurpose": "assertionMethod",
+        #         "verificationMethod": f"did:key:{authorized_key}#{authorized_key}",
+        #     }
+        # )
+        # r = requests.post(
+        #     f"{self.did_web_server}/{namespace}/{identifier}",
+        #     json={"logEntry": signed_log_entry},
+        # )
+        # try:
+        #     log_entry = r.json()
+        # except (ValueError, KeyError):
+        #     raise HTTPException(status_code=r.status_code, detail=r.text)
 
         return did_document, authorized_key
 
