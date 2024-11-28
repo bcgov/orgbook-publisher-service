@@ -125,6 +125,15 @@ async def register_credential_type(request_body: CredentialRegistration):
     #     }
     # ]
 
+    # Create Refresh Service
+    oca_bundle = OCAProcessor().create_bundle(credential_registration, credential_template)
+    # credential_template['refreshService'] = [
+    #     {
+    #         'type': 'CredentialRefresh',
+    #         'id': f'https://{settings.DOMAIN}/credentials/refresh?type={}&entity={}&cardinality={}',
+    #     }
+    # ]
+
     # Register credential type with Orgbook
     await OrgbookPublisher().create_credential_type(credential_registration)
     
