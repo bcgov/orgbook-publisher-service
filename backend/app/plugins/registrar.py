@@ -47,6 +47,9 @@ class PublisherRegistrar:
         traction.authorize()
         try:
             authorized_key = traction.get_multikey(did)
+            if not authorized_key:
+                authorized_key = traction.create_did_web(did)
+                traction.bind_key(authorized_key, multikey_kid)
             try:
                 traction.bind_key(authorized_key, multikey_kid)
             except:
