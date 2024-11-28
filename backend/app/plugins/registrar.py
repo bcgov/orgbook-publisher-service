@@ -144,29 +144,31 @@ class PublisherRegistrar:
         )
 
         r = requests.post(self.did_web_server, json={"didDocument": endorsed_did_document})
-        try:
-            log_entry = r.json()["logEntry"]
-        except (ValueError, KeyError):
-            raise HTTPException(status_code=r.status_code, detail=r.text)
+        if r.status_code != 201:
+            raise HTTPException(status_code=r.status_code, detail='Error registering DID.')
+        # try:
+        #     log_entry = r.json()["logEntry"]
+        # except (ValueError, KeyError):
+        #     raise HTTPException(status_code=r.status_code, detail=r.text)
 
-        # Sign log entry with authorized key
-        signed_log_entry = traction.add_di_proof(
-            document=log_entry, 
-            options={
-                "type": "DataIntegrityProof",
-                "cryptosuite": "eddsa-jcs-2022",
-                "proofPurpose": "assertionMethod",
-                "verificationMethod": f"did:key:{authorized_key}#{authorized_key}",
-            }
-        )
-        r = requests.post(
-            f"{self.did_web_server}/{namespace}/{identifier}",
-            json={"logEntry": signed_log_entry},
-        )
-        try:
-            log_entry = r.json()
-        except (ValueError, KeyError):
-            raise HTTPException(status_code=r.status_code, detail=r.text)
+        # # Sign log entry with authorized key
+        # signed_log_entry = traction.add_di_proof(
+        #     document=log_entry, 
+        #     options={
+        #         "type": "DataIntegrityProof",
+        #         "cryptosuite": "eddsa-jcs-2022",
+        #         "proofPurpose": "assertionMethod",
+        #         "verificationMethod": f"did:key:{authorized_key}#{authorized_key}",
+        #     }
+        # )
+        # r = requests.post(
+        #     f"{self.did_web_server}/{namespace}/{identifier}",
+        #     json={"logEntry": signed_log_entry},
+        # )
+        # try:
+        #     log_entry = r.json()
+        # except (ValueError, KeyError):
+        #     raise HTTPException(status_code=r.status_code, detail=r.text)
 
         return did_document, authorized_key
 
@@ -265,12 +267,12 @@ class PublisherRegistrar:
                         jsonpath_expr.update(credential, value)
 
         # Refresh Service
-        # credential["refreshService"] = [
-        #     {
-        #         'type': 'SupercessionRefresh',
-        #         'id': f'https://{settings.DOMAIN}/credentials/refresh?type={credential_type}&entity={entity_id}&cardinality={cardinality_id}'
-        #     }
-        # ]
+        credential["refreshService"] = [
+            {
+                'type': 'SimpleRefreshQuery',
+                'id': f'https://{settings.DOMAIN}/credentials/refresh?type={credential_type}&entity={entity_id}&cardinality={cardinality_id}'
+            }
+        ]
 
         # Credential Status
         status_list_id = credential_registration["status_lists"][-1]
@@ -303,7 +305,7 @@ class PublisherRegistrar:
             pass
 
         credential = Credential(
-            # context=credential.get('@context'),
+            context=credential_template.get('@context'),
             type=credential.get('type'),
             id=credential.get('id'),
             name=credential.get('name'),
@@ -312,8 +314,9 @@ class PublisherRegistrar:
             validUntil=credential.get('validUntil') or None,
             credentialSubject=credential.get('credentialSubject'),
             credentialStatus=credential.get('credentialStatus'),
+            refreshService=credential.get('refreshService'),
+            renderMethod=credential_template.get('renderMethod'),
         ).model_dump()
-        credential['@context'] = credential_template.get('@context')
 
         return credential
 

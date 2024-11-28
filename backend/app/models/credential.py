@@ -24,6 +24,9 @@ class BaseModel(BaseModel, extra="allow"):
     description: SkipJsonSchema[
         Union[str, DescriptionField, List[DescriptionField]]
     ] = Field(None)
+    
+    class Config:
+        populate_by_name = True
 
     def model_dump(self, **kwargs) -> Dict[str, Any]:
         return super().model_dump(by_alias=True, exclude_none=True, **kwargs)

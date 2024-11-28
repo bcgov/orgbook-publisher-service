@@ -42,7 +42,7 @@ async def list_issuer_registrations():
 async def register_issuer(request_body: IssuerRegistration):
     registration = vars(request_body)
 
-    # Register issuer on TDW server and create DID Document
+    # Register issuer on DID Web server and create DID Document
     did_document, authorized_key = await PublisherRegistrar().register_issuer(
         registration
     )
@@ -65,6 +65,8 @@ async def register_issuer(request_body: IssuerRegistration):
 )
 async def register_credential_type(request_body: CredentialRegistration):
     credential_registration = request_body.model_dump()
+    credential_type = credential_registration.get("type")
+    credential_version = credential_registration.get("version")
 
     mongo = MongoClient()
 
@@ -95,6 +97,12 @@ async def register_credential_type(request_body: CredentialRegistration):
 
     # Fetch remote context
     context = httpx.get(credential_registration["relatedResources"]["context"]).json()
+    
+    # Inject well known context components
+    context['@context']['SimpleRefreshQuery'] = 'https://schema.org/WebAPI'
+    context['@context']['OCABundle'] = 'https://oca.colossi.network/specification/#bundle'
+    settings.LOGGER.info(context)
+    
     # TODO, test context
     # credential_template['relatedResources'] = [
     #     {
@@ -115,15 +123,14 @@ async def register_credential_type(request_body: CredentialRegistration):
 
     # Create OCA Bundle
     oca_bundle = OCAProcessor().create_bundle(credential_registration, credential_template)
-    # context['@context']['OCABundle'] = ''
-    # credential_template['renderMethod'] = [
-    #     {
-    #         'type': 'OCABundle',
-    #         'id': f'https://{settings.DOMAIN}/bundles/{credential_type}/{version}',
-    #         'name': 'Overlay Capture Architecture Bundle',
-    #         'digestMultibase': generate_digest_multibase(oca_bundle),
-    #     }
-    # ]
+    credential_template['renderMethod'] = [
+        {
+            'type': 'OCABundle',
+            'id': f'https://{settings.DOMAIN}/bundles/{credential_type}/{credential_version}',
+            'name': 'Overlay Capture Architecture Bundle',
+            'digestMultibase': generate_digest_multibase(oca_bundle),
+        }
+    ]
 
     # Register credential type with Orgbook
     await OrgbookPublisher().create_credential_type(credential_registration)
