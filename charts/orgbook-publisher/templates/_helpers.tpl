@@ -33,6 +33,17 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 
 
 {{/*
+Returns a secret's value if it already exists in Kubernetes.
+*/}}
+{{- define "getSecretValue" }}
+{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
+{{- if $obj }}
+{{- index $obj .Key -}}
+{{- end -}}
+{{- end }}
+
+
+{{/*
 Returns a secret if it already in Kubernetes, otherwise it creates
 it randomly.
 */}}
