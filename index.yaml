@@ -2,6 +2,25 @@ apiVersion: v1
 entries:
   orgbook-publisher:
   - apiVersion: v2
+    appVersion: 0.0.3
+    created: "2024-11-28T20:47:23.259448579Z"
+    dependencies:
+    - name: mongodb
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.4.3
+    - name: common
+      repository: https://charts.bitnami.com/bitnami
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: An api server to register and manage credentials.
+    digest: d78b12c0fbf4a8569b2b2b4836bc7e8f4d8194cc02045462cac28249192b8677
+    name: orgbook-publisher
+    type: application
+    urls:
+    - https://github.com/bcgov/orgbook-publisher-service/releases/download/orgbook-publisher-0.0.3/orgbook-publisher-0.0.3.tgz
+    version: 0.0.3
+  - apiVersion: v2
     appVersion: 0.0.2
     created: "2024-11-27T19:55:52.009195008Z"
     dependencies:
@@ -39,4 +58,4 @@ entries:
     urls:
     - https://github.com/bcgov/orgbook-publisher-service/releases/download/orgbook-publisher-0.0.1/orgbook-publisher-0.0.1.tgz
     version: 0.0.1
-generated: "2024-11-27T19:55:52.009208944Z"
+generated: "2024-11-28T20:47:23.259469238Z"
