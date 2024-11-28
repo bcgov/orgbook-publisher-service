@@ -1,4 +1,4 @@
-# orgbook-publisher-service
+# Orgbook Publisher Service
 
 The Orgbook Publisher is a software aimed at facilitating the process for lines of business to publish data as Verifiable Credential to Orgbook.
 
