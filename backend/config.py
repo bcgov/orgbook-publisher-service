@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     ORGBOOK_URL: str = os.getenv("ORGBOOK_URL")
     ORGBOOK_API_URL: str = f"{ORGBOOK_URL}/api/v4"
     ORGBOOK_VC_SERVICE: str = f"{ORGBOOK_URL}/api/vc"
+    ORGBOOK_SYNC: bool = os.getenv("ORGBOOK_SYNC", True)
 
     DID_WEB_SERVER_URL: str = os.getenv("DID_WEB_SERVER_URL")
     PUBLISHER_MULTIKEY: str = os.getenv("PUBLISHER_MULTIKEY")
