@@ -21,9 +21,18 @@ class PublisherController:
         }
         
     def get_issuers(self):
-        self.admin_login()
+        # self.admin_login()
         r = requests.get(
             f'{self.endpoint}/registrations/issuers',
-            headers=self.headers
+            headers={'X-API-KEY': self.api_key}
         )
+        print(r.text)
+        return None
+        return r.json()
+        
+    def get_registry(self):
+        # self.admin_login()
+        r = requests.get(Config.ISSUER_REGISTRY)
+        print(r.text)
+        return None
         return r.json()

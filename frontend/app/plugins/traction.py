@@ -21,14 +21,19 @@ class TractionController:
                 'api_key': api_key
             }
         )
-        token = r.json()['token']
+        try:
+            token = r.json()['token']
+        except:
+            raise TractionControllerError('No token')
         r = requests.get(
             f'{self.endpoint}/wallet/keys/{Config.WITNESS_KEY}',
             headers={
                 'Authorization': f'Bearer {token}'
             }
         )
-        if not r.json()['multikey']:
-            raise TractionControllerError('Wrong tenant, no witness key.')
+        try:
+            key = r.json()['multikey']
+        except:
+            raise TractionControllerError('No key')
         return token
         

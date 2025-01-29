@@ -4,12 +4,29 @@
     <div class="container-tight">
         {% include('components/brand.jinja') %}
         <div class="card card-md">
-            <div class="card-body">
-                <h2 class="h2 text-center">Admin</h2>
-                <div class="mb-2">
-                    <a href="{{ url_for('admin.index') }}" class="btn btn-primary w-100">Administrative Tasks</a>
+            <form method="post">
+                <div class="card-body">
+                    <h2 class="h2 text-center">Orgbook Publisher Administration</h2>
+                        {{ form_login.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ form_login.tenant_id.label(class="form-label") }}
+                            <div>
+                                {{ form_login.tenant_id(class="form-control") }}
+                                {# <small class="form-hint">We'll never share your email with anyone else.</small> #}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form_login.api_key.label(class="form-label") }}
+                            <div>
+                                {{ form_login.api_key(class="form-control") }}
+                                {# <small class="form-hint">We'll never share your email with anyone else.</small> #}
+                            </div>
+                        </div>
                 </div>
-            </div>
+                <div class="card-footer">
+                    {{ form_login.submit(class="btn btn-primary w-100") }}
+                </div>
+            </form>
         </div>
     </div>
 </div>

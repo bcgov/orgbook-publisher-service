@@ -44,6 +44,6 @@ class Settings(BaseSettings):
     # MONGO_USER: str = os.getenv("MONGO_USER", 'mongo')
     # MONGO_PASSWORD: str = os.getenv("MONGO_PASSWORD", 'mongo')
     # MONGO_DB: str = os.getenv("MONGO_DB", 'mongo')
-    # MONGO_URI: Union[str, None] = os.getenv("MONGO_URI")
+    MONGO_URI: Union[str, None] = os.getenv("MONGO_URI")
 
 settings = Settings()
