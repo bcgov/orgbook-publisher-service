@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from typing import Union
 import os
 import logging
 from logging import Logger
@@ -37,10 +38,11 @@ class Settings(BaseSettings):
     JWT_SECRET: str = TRACTION_API_KEY
     JWT_ALGORITHM: str = "HS256"
 
-    MONGO_HOST: str = os.getenv("MONGO_HOST")
-    MONGO_PORT: str = os.getenv("MONGO_PORT")
-    MONGO_USER: str = os.getenv("MONGO_USER")
-    MONGO_PASSWORD: str = os.getenv("MONGO_PASSWORD")
-    MONGO_DB: str = os.getenv("MONGO_DB")
+    MONGO_HOST: str = os.getenv("MONGO_HOST", 'mongo')
+    MONGO_PORT: str = os.getenv("MONGO_PORT", '8080')
+    MONGO_USER: str = os.getenv("MONGO_USER", 'mongo')
+    MONGO_PASSWORD: str = os.getenv("MONGO_PASSWORD", 'mongo')
+    MONGO_DB: str = os.getenv("MONGO_DB", 'mongo')
+    MONGO_URI: Union[str, None] = os.getenv("MONGO_URI")
 
 settings = Settings()
