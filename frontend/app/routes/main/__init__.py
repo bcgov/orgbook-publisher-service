@@ -10,9 +10,8 @@ bp = Blueprint("main", __name__)
 def index():
     return render_template("pages/main/index.jinja", title=Config.APP_NAME)
 
-@bp.route("/out-of-band", methods=["GET"])
-def short_oob_url():
-    oobid = request.args.get('_oobid')
+@bp.route("/out-of-band/<oobid>", methods=["GET"])
+def short_oob_url(oobid: str):
     try:
         uuid.UUID(oobid)
         oobid = request.args.get('_oobid')

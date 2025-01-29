@@ -98,7 +98,7 @@ def index():
         invitation = cred_offer.get('invitation')
         with open(f'app/static/invitations/{oob_id}.json', 'w+') as f:
             f.write(json.dumps(invitation, indent=2))
-        session['short_url'] = f'https://{Config.DOMAIN}/out-of-band?_oobid={oob_id}'
+        session['short_url'] = f'https://{Config.DOMAIN}/out-of-band/{oob_id}'
         print(session['short_url'])
         # session['invitation_url'] = cred_offer.get('invitation_url')
         return redirect(url_for('admin.index'))
