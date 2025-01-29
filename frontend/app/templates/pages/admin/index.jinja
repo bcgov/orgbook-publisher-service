@@ -12,7 +12,6 @@
                             <th>Name</th>
                             <th>Identifier</th>
                             <th>Status</th>
-                            <th class="w-1"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -20,18 +19,19 @@
                         <tr>
                             <td data-label="Name">
                                 <div class="d-flex py-1 align-items-center">
-                                    {# <span class="avatar me-2"
-                                        style="background-image: url(./static/avatars/010m.jpg)"></span> #}
+                                    {# <span class="avatar me-2" style="background-image: url()"></span> #}
                                     <div class="flex-fill">
                                         <div class="font-weight-medium">{{ issuer['name'] }}</div>
-                                        {# <div class="text-secondary"><a href="#"
-                                                class="text-reset"></a></div> #}
+                                        <div class="text-secondary"><a target="_blank"
+                                                href="https://uniresolver.io/#{{ issuer['id'] }}"
+                                                class="text-reset">Resolve</a></div>
                                     </div>
                                 </div>
                             </td>
                             <td data-label="Identifier">
                                 <div>{{ ' '.join((issuer['id'].split(':')[-2]).split('-')).title() }}</div>
-                                <div class="text-secondary">{{ ' '.join((issuer['id'].split(':')[-1]).split('-')).title() }}</div>
+                                <div class="text-secondary">{{ '
+                                    '.join((issuer['id'].split(':')[-1]).split('-')).title() }}</div>
                             </td>
                             <td class="text-secondary" data-label="Role">
                                 {% if issuer['active'] %}
@@ -39,26 +39,6 @@
                                 {% else %}
                                 <span class="badge badge-outline text-warning">Pending</span>
                                 {% endif %}
-                            </td>
-                            <td>
-                                <div class="btn-list flex-nowrap">
-                                    {# <a href="#" class="btn">
-                                        Edit
-                                    </a> #}
-                                    <div class="dropdown">
-                                        <button class="btn dropdown-toggle align-text-top" data-bs-toggle="dropdown">
-                                            Actions
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-end">
-                                            <a class="dropdown-item" href="#">
-                                                Issue Auth Cred
-                                            </a>
-                                            <a class="dropdown-item" href="#">
-                                                Deactivate
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
                             </td>
                         </tr>
                         {% endfor %}
@@ -81,6 +61,22 @@
                 {% include('pages/admin/modal_add_issuer.jinja') %}
             </div>
         </div>
+    </div>
+    <div class="alert alert-info alert-dismissible mt-3" role="alert">
+        <div class="d-flex">
+            <div>
+                <!-- Download SVG icon from http://tabler.io/icons/icon/info-circle -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                    class="icon alert-icon icon-2">
+                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"></path>
+                    <path d="M12 9h.01"></path>
+                    <path d="M11 12h1v4h1"></path>
+                </svg>
+            </div>
+            <div>{{ session.get('short_url') }}</div>
+        </div>
+        <a class="btn-close" data-bs-dismiss="alert" aria-label="close"></a>
     </div>
 </div>
 
