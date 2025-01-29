@@ -14,7 +14,7 @@ class TractionControllerError(Exception):
 class TractionController:
     def __init__(self):
         self.default_kid = "key-01"
-        self.publisher_multikey = settings.PUBLISHER_MULTIKEY
+        self.witness_key = settings.WITNESS_KEY
         self.endpoint = settings.TRACTION_API_URL
         self.tenant_id = settings.TRACTION_TENANT_ID
         self.api_key = settings.TRACTION_API_KEY
@@ -29,10 +29,17 @@ class TractionController:
             return None
 
     async def provision(self):
-        self.authorize()
+        # self.authorize()
         settings.LOGGER.info("Fetching issuer registry.")
         registry = requests.get(settings.ISSUER_REGISTRY_URL).json()
-        issuers = registry.get('registry') or registry.get('issuers')
+        issuers = registry.get('registry')
+        
+        if not isinstance(issuers, list):
+            issuers = registry.get('issuers')
+            
+        if not isinstance(issuers, list):
+            settings.LOGGER.info('Invalid registry response.')
+            
         settings.LOGGER.info(f"Found {len(issuers)} entries in registry.")
         # mongo = MongoClient()
         # mongo.provision()
