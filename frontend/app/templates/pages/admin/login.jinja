@@ -7,7 +7,7 @@
             <form method="post">
                 <div class="card-body">
                     <h2 class="h2 text-center">Orgbook Publisher Administration</h2>
-                        {{ form_login.hidden_tag() }}
+                        {{ form_login.csrf_token }}
                         <div class="mb-3">
                             {{ form_login.tenant_id.label(class="form-label") }}
                             <div>

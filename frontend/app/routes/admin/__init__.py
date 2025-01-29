@@ -66,13 +66,14 @@ def index():
     form_credential_offer.issuer.choices = [("", "")] + [
         (issuer['id'], issuer['name']) for issuer in issuers if issuer['active']
     ]
-    # if form_issuer_registration.submit.data and request.method == "POST":
-    #     issuer_registration = publisher.register_issuer(
-    #         request.form.get('scope'),
-    #         request.form.get('name'),
-    #     )
-        # return redirect(url_for('admin.index'))
-    if form_credential_offer.submit.data and request.method == "POST":
+    if form_issuer_registration.validate() and request.method == "POST":
+        publisher = PublisherController()
+        issuer_registration = publisher.register_issuer(
+            request.form.get('scope'),
+            request.form.get('name'),
+        )
+        return redirect(url_for('admin.index'))
+    elif form_credential_offer.validate() and request.method == "POST":
         
         email = request.form.get('email')
         
@@ -83,6 +84,7 @@ def index():
         traction = TractionController()
         traction.set_headers(session['access_token'])
         
+        # TODO, timestamp in future
         cred_offer = traction.offer_credential(
             email,
             Config.AUTH_CRED_DEF_ID,
@@ -99,8 +101,6 @@ def index():
         with open(f'app/static/invitations/{oob_id}.json', 'w+') as f:
             f.write(json.dumps(invitation, indent=2))
         session['short_url'] = f'https://{Config.DOMAIN}/out-of-band/{oob_id}'
-        print(session['short_url'])
-        # session['invitation_url'] = cred_offer.get('invitation_url')
         return redirect(url_for('admin.index'))
 
     return render_template(
@@ -121,7 +121,7 @@ def logout():
 @bp.route("/login", methods=["GET", "POST"])
 def login():
     form_login = AdminLoginForm()
-    if request.method == "POST":
+    if form_login.validate() and request.method == "POST":
         traction = TractionController()
         session['access_token'] = traction.admin_login(
             request.form.get("tenant_id"),
