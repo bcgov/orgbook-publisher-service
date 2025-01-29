@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request
+from flask import Blueprint, render_template
 from config import Config
 import json
 import uuid
@@ -14,7 +14,6 @@ def index():
 def short_oob_url(oobid: str):
     try:
         uuid.UUID(oobid)
-        oobid = request.args.get('_oobid')
         with open(f'app/static/invitations/{oobid}.json', 'r') as f:
             invitation = json.loads(f.read())
         return invitation
