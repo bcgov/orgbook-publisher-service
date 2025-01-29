@@ -5,6 +5,8 @@ load_dotenv()
 
 class Config(object):
     APP_NAME = "Orgbook Publisher UI"
+    
+    DOMAIN = os.getenv("DOMAIN")
 
     SECRET_KEY = os.getenv("SECRET_KEY", "unsecured")
     WITNESS_KEY = os.getenv("WITNESS_KEY")
@@ -17,6 +19,12 @@ class Config(object):
     
     PUBLISHER_API_URL = os.getenv("PUBLISHER_API_URL")
     PUBLISHER_API_KEY = TRACTION_API_KEY
-
-    SESSION_COOKIE_SAMESITE = "Strict"
-    SESSION_COOKIE_HTTPONLY = "True"
+    
+    # SESSION_TYPE = 'redis'
+    # SESSION_REDIS = redis.from_url(os.getenv('REDIS_URL'))
+    # SESSION_COOKIE_NAME  = 'publisher'
+    # SESSION_COOKIE_SAMESITE = "Strict"
+    # SESSION_COOKIE_HTTPONLY = "True"
+    
+    RESTRICTED_EMAIL = "gov.bc.ca"
+    AUTH_CRED_DEF_ID = os.getenv("AUTH_CRED_DEF_ID")

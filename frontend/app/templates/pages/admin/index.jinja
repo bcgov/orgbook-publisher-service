@@ -71,9 +71,14 @@
                 <a href="{{ url_for('admin.logout') }}" class="btn">
                     Exit
                 </a>
-                <a href="#" class="btn btn-primary">
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-offer-credential">
+                    Offer Auth Credential
+                </a>
+                {% include('pages/admin/modal_offer_credential.jinja') %}
+                <a href="#" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-issuer">
                     Register New Issuer
                 </a>
+                {% include('pages/admin/modal_add_issuer.jinja') %}
             </div>
         </div>
     </div>

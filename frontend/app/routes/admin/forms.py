@@ -4,7 +4,8 @@ from wtforms import (
     SubmitField,
     PasswordField,
     SelectField,
-    EmailField
+    EmailField,
+    DateTimeField
 )
 from wtforms.validators import InputRequired
 
@@ -18,11 +19,11 @@ class AdminLoginForm(FlaskForm):
     submit = SubmitField("Login")
 
 class RegisterIssuerForm(FlaskForm):
-    namespace = StringField(
-        "WebVH Namespace", [InputRequired()]
+    scope = StringField(
+        "Scope", [InputRequired()]
     )
-    identifier = StringField(
-        "WebVH Identifier", [InputRequired()]
+    name = StringField(
+        "Name", [InputRequired()]
     )
     submit = SubmitField("Register")
 
@@ -33,4 +34,7 @@ class OfferAuthCredentialForm(FlaskForm):
     issuer = SelectField(
         "Delegated Issuer", [InputRequired()]
     )
+    # expiration = DateTimeField(
+    #     "Expiration", []
+    # )
     submit = SubmitField("Offer")

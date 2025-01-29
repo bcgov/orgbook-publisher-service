@@ -16,6 +16,9 @@ from .forms import (
     OfferAuthCredentialForm
 )
 
+import time
+import json
+
 bp = Blueprint("admin", __name__)
 
 
@@ -25,44 +28,86 @@ bp = Blueprint("admin", __name__)
 #         return redirect(url_for("admin.logout"))
 
 
-@bp.route("/issuers", methods=["GET"])
 def get_issuers():
-    if not session.get('tenant_id'):
-        return redirect(url_for("admin.logout"))
-
     publisher = PublisherController()
     issuers = publisher.get_issuers()
-    print(issuers)
+    issuers += [{
+        'id': 'did:web:example.com:mines-act:chief-permitting-officer',
+        'name': 'Chief Permitting Officer'
+    },{
+        'id': 'did:web:example.com:petroleum-and-natural-gas-act:director-of-petroleum-lands',
+        'name': 'Director of Petroleum Lands'
+    }]
+    
     registry = publisher.get_registry()
-    print(registry)
+    registry += [{
+        'id': 'did:web:example.com:mines-act:chief-permitting-officer',
+        'name': 'Chief Permitting Officer'
+    }]
+
+    for issuer in issuers:
+        issuer['active'] = True if issuer['id'] in [
+            entry['id'] for entry in registry
+        ] else False
+
+    return issuers
 
 
 
-@bp.route("/", methods=["GET"])
+@bp.route("/", methods=["GET", "POST"])
 def index():
     if not session.get('tenant_id'):
         return redirect(url_for("admin.logout"))
 
-    publisher = PublisherController()
-    issuers = publisher.get_issuers()
-    registry = publisher.get_registry()
-    issuers = [{
-        'id': 'did:web:example.com:mines-act:chief-permitting-officer',
-        'name': 'Chief Permitting Officer',
-        'active': True,
-    },{
-        'id': 'did:web:example.com:petroleum-and-natural-gas-act:director-of-petroleum-lands',
-        'name': 'Director of Petroleum Lands',
-        'active': False,
-    }]
+    issuers = get_issuers()
     
     form_issuer_registration = RegisterIssuerForm()
-    form_offer_auth_credential = OfferAuthCredentialForm()
+    form_credential_offer = OfferAuthCredentialForm()
+    form_credential_offer.issuer.choices = [("", "")] + [
+        (issuer['id'], issuer['name']) for issuer in issuers if issuer['active']
+    ]
+    # if form_issuer_registration.submit.data and request.method == "POST":
+    #     issuer_registration = publisher.register_issuer(
+    #         request.form.get('scope'),
+    #         request.form.get('name'),
+    #     )
+        # return redirect(url_for('admin.index'))
+    if form_credential_offer.submit.data and request.method == "POST":
+        
+        email = request.form.get('email')
+        
+        if email.split('@')[-1] != Config.RESTRICTED_EMAIL:
+            pass
+        
+        
+        traction = TractionController()
+        traction.set_headers(session['access_token'])
+        
+        cred_offer = traction.offer_credential(
+            email,
+            Config.AUTH_CRED_DEF_ID,
+            {
+                'id': request.form.get('issuer'),
+                'role': 'issuer',
+                'email': email,
+                'target': Config.PUBLISHER_API_URL,
+                'expiration': str(time.time()),
+            }
+        )
+        oob_id = cred_offer.get('oob_id')
+        invitation = cred_offer.get('invitation')
+        with open(f'app/static/invitations/{oob_id}.json', 'w+') as f:
+            f.write(json.dumps(invitation, indent=2))
+        session['short_url'] = f'https://{Config.DOMAIN}/out-of-band?_oobid={oob_id}'
+        print(session['short_url'])
+        # session['invitation_url'] = cred_offer.get('invitation_url')
+        return redirect(url_for('admin.index'))
+
     return render_template(
         'pages/admin/index.jinja',
         issuers=issuers,
         form_issuer_registration=form_issuer_registration,
-        form_offer_auth_credential=form_offer_auth_credential
+        form_credential_offer=form_credential_offer
     )
 
 

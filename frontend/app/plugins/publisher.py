@@ -21,18 +21,36 @@ class PublisherController:
         }
         
     def get_issuers(self):
-        # self.admin_login()
         r = requests.get(
             f'{self.endpoint}/registrations/issuers',
             headers={'X-API-KEY': self.api_key}
         )
-        print(r.text)
-        return None
-        return r.json()
+        try:
+            issuers = r.json()
+            return issuers
+        except:
+            raise PublisherControllerError()
         
     def get_registry(self):
-        # self.admin_login()
         r = requests.get(Config.ISSUER_REGISTRY)
-        print(r.text)
-        return None
-        return r.json()
+        try:
+            registry = r.json().get('registry')
+            if not isinstance(registry, list):
+                registry = r.json().get('issuers')
+            return registry
+        except:
+            raise PublisherControllerError()
+        
+    def register_issuer(self, scope, name):
+        r = requests.post(
+            f'{self.endpoint}/registrations/issuers',
+            headers={'X-API-KEY': self.api_key},
+            json={
+                'scope': scope,
+                'name': name
+            }
+        )
+        try:
+            return r.json()
+        except:
+            raise PublisherControllerError()
