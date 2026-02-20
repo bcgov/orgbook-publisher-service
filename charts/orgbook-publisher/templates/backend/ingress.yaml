@@ -4,7 +4,7 @@ kind: Ingress
 metadata:
   name: {{ include "backend.fullname" . }}
   labels:
-    {{- if .Values.ingress.labels }}  
+    {{- if .Values.ingress.labels }}
     {{- toYaml .Values.ingress.labels | nindent 4 }}
     {{- end }}
     {{- include "backend.labels" . | nindent 4 }}

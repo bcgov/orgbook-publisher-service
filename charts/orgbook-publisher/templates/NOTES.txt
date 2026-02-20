@@ -1,0 +1,26 @@
+Thank you for installing {{ .Chart.Name }} v{{ .Chart.AppVersion }}.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  BACKEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Application URL:
+    https://{{ .Values.backend.host }}
+
+  API health check:
+    https://{{ .Values.backend.host }}/server/status
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  MONGODB
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Host:     {{ include "backend.mongodb.host" . }}
+  Port:     {{ include "backend.mongodb.port" . }}
+  Database: {{ include "backend.mongodb.database" . }}
+  {{- if include "backend.mongodb.authEnabled" . }}
+  Username: {{ include "backend.mongodb.username" . }}
+  Secret:   {{ include "backend.databaseSecretName" . }}
+
+  Retrieve the MongoDB password:
+    kubectl get secret {{ include "backend.databaseSecretName" . }} \
+      -n {{ .Release.Namespace }} \
+      -o jsonpath="{.data.{{ .Values.mongodb.customUser.secretKeys.password }}}" | base64 --decode
+  {{- end }}

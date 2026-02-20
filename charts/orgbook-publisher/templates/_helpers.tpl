@@ -22,6 +22,7 @@
 {{- define "common.labels" -}}
 app: {{ include "global.name" . }}
 helm.sh/chart: {{ include "global.chart" . }}
+app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- if .Chart.AppVersion }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
@@ -43,22 +44,6 @@ Returns a secret's value if it already exists in Kubernetes.
 {{- end }}
 
 
-{{/*
-Returns a secret if it already in Kubernetes, otherwise it creates
-it randomly.
-*/}}
-{{- define "getOrGeneratePass" }}
-{{- $len := (default 16 .Length) | int -}}
-{{- $obj := (lookup "v1" .Kind .Namespace .Name).data -}}
-{{- if $obj }}
-{{- index $obj .Key -}}
-{{- else if (eq (lower .Kind) "secret") -}}
-{{- randAlphaNum $len | b64enc -}}
-{{- else -}}
-{{- randAlphaNum $len -}}
-{{- end -}}
-{{- end }}
-
 
 {{/* BACKEND */}}
 
@@ -78,21 +63,70 @@ app.kubernetes.io/name: {{ include "backend.fullname" . }}
 
 
 {{/*
-Define the name of the database secret to use
+Return the secret name containing MongoDB custom-user credentials.
+Defaults to the secret created by the CloudPirates mongodb subchart.
+Set mongodb.existingSecret to supply your own secret instead.
 */}}
 {{- define "backend.databaseSecretName" -}}
-{{- if (empty .Values.database.existingSecret) -}}
-{{- printf "%s-%s" .Release.Name "mongodb" | trunc 63 | trimSuffix "-" }}
+{{- if .Values.mongodb.existingSecret -}}
+{{- .Values.mongodb.existingSecret -}}
 {{- else -}}
-{{- .Values.database.existingSecret -}}
+{{- printf "%s-mongodb-custom-user-secret" .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- end -}}
 {{- end }}
 
+
+{{/* MONGODB CONNECTION HELPERS */}}
+
 {{/*
-Return true if a database secret should be created
+Selector labels that match MongoDB pods created by the CloudPirates subchart.
+Mirrors the cloudpirates.selectorLabels output for chart name "mongodb".
+If mongodb.nameOverride is set, the subchart will use that as app.kubernetes.io/name.
 */}}
-{{- define "backend.database.createSecret" -}}
-{{- if not .Values.database.existingSecret -}}
+{{- define "mongodb.podSelectorLabels" -}}
+app.kubernetes.io/name: {{ default "mongodb" .Values.mongodb.nameOverride | trunc 63 | trimSuffix "-" }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end -}}
+
+{{/*
+Return the MongoDB service host.
+Uses the headless service when replicaSet is enabled.
+*/}}
+{{- define "backend.mongodb.host" -}}
+{{- if .Values.mongodb.replicaSet.enabled -}}
+{{- printf "%s-mongodb-headless.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+{{- else -}}
+{{- printf "%s-mongodb.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Return the MongoDB service port.
+*/}}
+{{- define "backend.mongodb.port" -}}
+{{- .Values.mongodb.service.port | default 27017 -}}
+{{- end -}}
+
+{{/*
+Return the MongoDB database name.
+*/}}
+{{- define "backend.mongodb.database" -}}
+{{- .Values.mongodb.customUser.database -}}
+{{- end -}}
+
+{{/*
+Return the MongoDB username.
+*/}}
+{{- define "backend.mongodb.username" -}}
+{{- .Values.mongodb.customUser.name -}}
+{{- end -}}
+
+{{/*
+Return non-empty if MongoDB authentication is enabled, empty otherwise.
+Usage: {{- if include "backend.mongodb.authEnabled" . }}
+*/}}
+{{- define "backend.mongodb.authEnabled" -}}
+{{- if .Values.mongodb.auth.enabled -}}
 {{- true -}}
 {{- end -}}
 {{- end -}}

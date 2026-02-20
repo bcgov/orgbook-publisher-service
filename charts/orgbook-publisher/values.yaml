@@ -1,125 +1,171 @@
 ---
+# -- String to partially override the chart name
 nameOverride: "orgbook-publisher"
+# -- String to fully override the chart name
 fullnameOverride: "orgbook-publisher"
 
-selectorLabels: {}
-
-database:
-  existingSecret: ""
-
 ingress:
+  # -- Enable the Ingress resource
+  enabled: true
+  # -- TLS configuration for the ingress
   tls: []
-  labels: []
-  annotations: []
+  # -- Additional labels for the ingress resource
+  labels: {}
+  # -- Annotations for the ingress resource
+  annotations: {}
 
 networkPolicy:
   ingress:
-    namespaceSelector: []
+    # -- Namespace selector labels for the backend ingress network policy
+    namespaceSelector: {}
 
+# -- @default -- See sub-values
 backend:
+  # -- Backend hostname used for the Ingress rule and DOMAIN env var
+  host: ""
+
+  environment:
+    # -- OrgBook API URL
+    ORGBOOK_URL: ""
+    # -- Publisher multikey
+    PUBLISHER_MULTIKEY: ""
+    # -- Issuer registry URL
+    ISSUER_REGISTRY_URL: ""
+    # -- Traction API URL
+    TRACTION_API_URL: ""
+    # -- DID Web Server URL
+    DID_WEB_SERVER_URL: ""
+
   image:
+    # -- Backend image repository
     repository: ghcr.io/bcgov/orgbook-publisher-service
+    # -- Backend image tag
     tag: v0.0.2
+    # -- Backend image pull policy
     pullPolicy: IfNotPresent
+    # -- Backend image pull secrets
     pullSecrets: []
 
+  # -- Number of backend replicas
   replicaCount: 1
 
+  # -- Annotations for backend pods
   podAnnotations: {}
+  # -- Security context for backend pods
   podSecurityContext: {}
+  # -- Security context for backend containers
   containerSecurityContext: {}
 
   service:
+    # -- Backend service type
     type: ClusterIP
+    # -- Backend API container port
     apiPort: 8000
+    # -- Backend service port
     servicePort: 8000
 
   resources:
     limits:
+      # -- CPU limit for backend
       cpu: 100m
+      # -- Memory limit for backend
       memory: 512Mi
     requests:
+      # -- CPU request for backend
       cpu: 10m
+      # -- Memory request for backend
       memory: 128Mi
 
   networkPolicy:
     ingress:
+      # -- Pod selector labels for the backend ingress network policy
       podSelector: {}
 
-##  Overrides for bitnami/mongodb chart - https://github.com/bitnami/charts/tree/main/bitnami/mongodb
+# @section MongoDB Subchart Configuration
+#
+# Overrides for CloudPirates MongoDB chart
+# ref: https://github.com/CloudPirates-io/helm-charts/tree/main/charts/mongodb
+
+# -- @default -- See sub-values
 mongodb:
-  auth:
-    ## @param mongodb.auth.enabled Enable authentication
-    ## ref: https://docs.mongodb.com/manual/tutorial/enable-authentication/
-    ##
-    enabled: true
-    ## @param mongodb.auth.existingSecret Existing secret with MongoDB(&reg;) credentials (keys: `mongodb-passwords`, `mongodb-root-password`, `mongodb-metrics-password`, `mongodb-replica-set-key`)
-    ## NOTE: When it's set the previous parameters are ignored.
-    ##
-    existingSecret: '{{ include "global.fullname" . }}'
-    ## MongoDB(&reg;) custom users and databases
-    ## ref: https://github.com/bitnami/containers/tree/main/bitnami/mongodb#creating-a-user-and-database-on-first-run
-    ## @param mongodb.auth.usernames List of custom users to be created during the initialization
-    ## @param mongodb.auth.databases List of custom databases to be created during the initialization
-    ##
-    usernames:
-      - "orgbook-publisher"
-    databases:
-      - "orgbook-publisher"
-  ## @param mongodb.commonLabels [array] Add labels to all the deployed resources (sub-charts are not considered). Evaluated as a template
-  ##
-  commonLabels:
-    app: orgbook-publisher
-    role: database
-  ## @param mongodb.image.registry image registry
+  # -- Enable bundled MongoDB subchart
+  enabled: true
+
+  # -- Name of an existing secret containing custom-user MongoDB credentials.
+  # When set, the CloudPirates subchart will not generate its own credentials secret.
+  # The secret must contain keys matching mongodb.customUser.secretKeys (defaults:
+  # CUSTOM_USER, CUSTOM_PASSWORD, CUSTOM_DB).
+  existingSecret: ""
+
   image:
-    registry: artifacts.developer.gov.bc.ca/docker-remote
-  ## @param mongodb.architecture MongoDB(&reg;) architecture (`standalone` or `replicaset`)
-  ##
-  architecture: replicaset
-  ## MongoDB(&reg;) containers' Security Context (main and metrics container).
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container
-  ## @param mongodb.containerSecurityContext.enabled Enable MongoDB(&reg;) container(s)' Security Context
-  ##
-  containerSecurityContext:
-    enabled: false
-  ## MongoDB(&reg;) pods' Security Context.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
-  ## @param mongodb.podSecurityContext.enabled Enable MongoDB(&reg;) pod(s)' Security Context
-  podSecurityContext:
-    enabled: false
-  ## Enable persistence using Persistent Volume Claims
-  ## ref: https://kubernetes.io/docs/user-guide/persistent-volumes/
-  ##
-  persistence:
-    ## @param mongodb.persistence.enabled Enable MongoDB(&reg;) data persistence using PVC
-    ##
+    # -- MongoDB image registry
+    registry: docker.io
+    # -- MongoDB image repository
+    repository: mongo
+    # -- MongoDB image tag
+    tag: "8.0"
+    # -- MongoDB image pull policy
+    pullPolicy: IfNotPresent
+
+  # -- Target platform for MongoDB deployment. Set to "openshift" for OpenShift compatibility.
+  targetPlatform: ""
+
+  auth:
+    # -- Enable MongoDB authentication
     enabled: true
-    ## @param mongodb.persistence.storageClass PVC Storage Class for MongoDB(&reg;) data volume
-    ## If defined, storageClassName: <storageClass>
-    ## If set to "-", storageClassName: "", which disables dynamic provisioning
-    ## If undefined (the default) or set to null, no storageClassName spec is
-    ## set, choosing the default provisioner.
-    ##
-    storageClass: netapp-block-standard
-  ## ServiceAccount
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-  ##
-  serviceAccount:
-    ## @param mongodb.serviceAccount.create Enable creation of ServiceAccount for MongoDB(&reg;) pods
-    ##
-    create: false
-  arbiter:
-    ## @param mongodb.arbiter.enabled Enable deploying the arbiter
-    ##   https://docs.mongodb.com/manual/tutorial/add-replica-set-arbiter/
-    ##
+    # -- MongoDB root username
+    rootUsername: "admin"
+
+  # Custom user configuration.
+  # CloudPirates MongoDB creates the user via init script using the secret keys below.
+  customUser:
+    # -- Name of the custom MongoDB user
+    name: "orgbook-publisher"
+    # -- Name of the MongoDB database
+    database: "orgbook-publisher"
+    # -- Name of an existing secret for custom-user credentials.
+    # Leave empty to let the subchart generate its own credentials secret.
+    # When set, must match mongodb.existingSecret.
+    existingSecret: ""
+    # -- Secret key names in the custom-user secret.
+    # Defaults match the CloudPirates subchart's generated secret keys.
+    secretKeys:
+      name: "CUSTOM_USER"
+      password: "CUSTOM_PASSWORD"
+      database: "CUSTOM_DB"
+
+  # -- Labels added to all MongoDB resources
+  # @default -- `{ app.kubernetes.io/role: database }`
+  commonLabels:
+    app.kubernetes.io/role: database
+
+  networkPolicy:
+    # -- Enable NetworkPolicy for MongoDB pods
+    enabled: true
+    # -- Additional ingress rules appended to the default backend→db and inter-pod rules
+    extraIngress: []
+    # -- Egress rules. When non-empty, policyType: Egress is added and only the listed
+    # rules are allowed. Leave empty to keep egress unrestricted (Kubernetes default).
+    extraEgress: []
+
+  replicaSet:
+    # -- Enable MongoDB replica set mode (standalone if false)
     enabled: false
-  hidden:
-    ## @param mongodb.hidden.enabled Enable deploying the hidden nodes
-    ##   https://docs.mongodb.com/manual/tutorial/configure-a-hidden-replica-set-member/
-    ##
-    enabled: false
-  metrics:
-    ## @param mongodb.metrics.enabled Enable using a sidecar Prometheus exporter
-    ##
-    enabled: false
+  service:
+    # -- MongoDB service type
+    type: ClusterIP
+    # -- MongoDB service port
+    port: 27017
+  # -- Set MongoDB container security context
+  # @default -- `{}`
+  containerSecurityContext: {}
+  # -- Set MongoDB pod security context
+  # @default -- `{}`
+  podSecurityContext: {}
+  persistence:
+    # -- Enable MongoDB data persistence using PVC
+    enabled: true
+    # -- PVC Storage Class for MongoDB data volume
+    storageClass: ""
+    # -- PVC Storage size for MongoDB data volume
+    size: 8Gi
