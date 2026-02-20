@@ -1,9 +1,9 @@
 dependencies:
 - name: mongodb
-  repository: https://charts.bitnami.com/bitnami
-  version: 15.4.3
+  repository: oci://registry-1.docker.io/cloudpirates
+  version: 0.10.3
 - name: common
   repository: https://charts.bitnami.com/bitnami
-  version: 2.27.0
-digest: sha256:5ec6e328ec3b414a1fc23619f7eeb08c962a93b1047958675ed255b95ec91326
-generated: "2024-11-26T11:38:51.8941701-08:00"
+  version: 2.36.0
+digest: sha256:618641e1ac1a963b0e152ccb22a80b15cdf425e53bd84f7d84c0f694ff933656
+generated: "2026-02-18T11:16:44.198293-08:00"
