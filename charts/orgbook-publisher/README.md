@@ -16,11 +16,17 @@ An api server to register and manage credentials.
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | backend.containerSecurityContext | object | `{}` | Security context for backend containers |
+| backend.environment.DID_WEB_SERVER_URL | string | `""` | DID Web Server URL |
+| backend.environment.ISSUER_REGISTRY_URL | string | `""` | Issuer registry URL |
+| backend.environment.ORGBOOK_URL | string | `""` | OrgBook API URL |
+| backend.environment.PUBLISHER_MULTIKEY | string | `""` | Publisher multikey |
+| backend.environment.TRACTION_API_URL | string | `""` | Traction API URL |
+| backend.host | string | `""` | Backend hostname used for the Ingress rule and DOMAIN env var |
 | backend.image.pullPolicy | string | `"IfNotPresent"` | Backend image pull policy |
 | backend.image.pullSecrets | list | `[]` | Backend image pull secrets |
 | backend.image.repository | string | `"ghcr.io/bcgov/orgbook-publisher-service"` | Backend image repository |
 | backend.image.tag | string | `"v0.0.2"` | Backend image tag |
-| backend.networkPolicy.ingress.podSelector | object | `{}` | Pod selector for backend ingress network policy |
+| backend.networkPolicy.ingress.podSelector | object | `{}` | Pod selector labels for the backend ingress network policy |
 | backend.podAnnotations | object | `{}` | Annotations for backend pods |
 | backend.podSecurityContext | object | `{}` | Security context for backend pods |
 | backend.replicaCount | int | `1` | Number of backend replicas |
@@ -31,47 +37,38 @@ An api server to register and manage credentials.
 | backend.service.apiPort | int | `8000` | Backend API container port |
 | backend.service.servicePort | int | `8000` | Backend service port |
 | backend.service.type | string | `"ClusterIP"` | Backend service type |
-| database.existingSecret | string | `""` | Use an existing secret for MongoDB credentials (bypasses chart-managed secret creation) |
-| externalMongodb.auth.enabled | bool | `true` | Enable authentication for external MongoDB |
-| externalMongodb.auth.existingSecret | string | `""` | Name of existing secret containing MongoDB password |
-| externalMongodb.auth.existingSecretPasswordKey | string | `"mongodb-password"` | Key in the existing secret containing the MongoDB password |
-| externalMongodb.auth.password | string | `""` | MongoDB password. Ignored if existingSecret is set. Use existingSecret for production deployments. |
-| externalMongodb.auth.username | string | `"orgbook-publisher"` | MongoDB username |
-| externalMongodb.database | string | `"orgbook-publisher"` | Database name to use |
-| externalMongodb.host | string | `""` | External MongoDB host (e.g., "mongodb.example.com"). Required when mongodb is disabled. |
-| externalMongodb.port | int | `27017` | External MongoDB port |
 | fullnameOverride | string | `"orgbook-publisher"` | String to fully override the chart name |
-| ingress.annotations | list | `[]` | Annotations for the ingress |
-| ingress.labels | list | `[]` | Labels for the ingress |
+| ingress.annotations | object | `{}` | Annotations for the ingress resource |
+| ingress.enabled | bool | `true` | Enable the Ingress resource |
+| ingress.labels | object | `{}` | Additional labels for the ingress resource |
 | ingress.tls | list | `[]` | TLS configuration for the ingress |
 | mongodb.auth.enabled | bool | `true` | Enable MongoDB authentication |
-| mongodb.auth.existingSecret | string | `"{{ printf \"%s-mongodb\" .Release.Name }}"` | Existing secret with MongoDB credentials (key: `mongodb-root-password`) |
 | mongodb.auth.rootUsername | string | `"admin"` | MongoDB root username |
 | mongodb.commonLabels | object | `{ app.kubernetes.io/role: database }` | Labels added to all MongoDB resources |
 | mongodb.containerSecurityContext | object | `{}` | Set MongoDB container security context |
 | mongodb.customUser.database | string | `"orgbook-publisher"` | Name of the MongoDB database |
-| mongodb.customUser.existingSecret | string | `"{{ printf \"%s-mongodb\" .Release.Name }}"` | Existing secret containing custom user credentials |
+| mongodb.customUser.existingSecret | string | `""` | Name of an existing secret for custom-user credentials. Leave empty to let the subchart generate its own credentials secret. When set, must match mongodb.existingSecret. |
 | mongodb.customUser.name | string | `"orgbook-publisher"` | Name of the custom MongoDB user |
-| mongodb.customUser.secretKeys.database | string | `"mongodb-database"` | Key name for database in existing secret |
-| mongodb.customUser.secretKeys.name | string | `"mongodb-user"` | Key name for username in existing secret |
-| mongodb.customUser.secretKeys.password | string | `"mongodb-password"` | Key name for password in existing secret |
-| mongodb.enabled | bool | `true` | Enable bundled MongoDB subchart. Set to false when using externalMongodb. |
+| mongodb.customUser.secretKeys | object | `{"database":"CUSTOM_DB","name":"CUSTOM_USER","password":"CUSTOM_PASSWORD"}` | Secret key names in the custom-user secret. Defaults match the CloudPirates subchart's generated secret keys. |
+| mongodb.enabled | bool | `true` | Enable bundled MongoDB subchart |
+| mongodb.existingSecret | string | `""` | Name of an existing secret containing custom-user MongoDB credentials. When set, the CloudPirates subchart will not generate its own credentials secret. The secret must contain keys matching mongodb.customUser.secretKeys (defaults: CUSTOM_USER, CUSTOM_PASSWORD, CUSTOM_DB). |
 | mongodb.image.pullPolicy | string | `"IfNotPresent"` | MongoDB image pull policy |
 | mongodb.image.registry | string | `"docker.io"` | MongoDB image registry |
 | mongodb.image.repository | string | `"mongo"` | MongoDB image repository |
 | mongodb.image.tag | string | `"8.0"` | MongoDB image tag |
+| mongodb.networkPolicy.enabled | bool | `true` | Enable NetworkPolicy for MongoDB pods |
+| mongodb.networkPolicy.extraEgress | list | `[]` | Egress rules. When non-empty, policyType: Egress is added and only the listed rules are allowed. Leave empty to keep egress unrestricted (Kubernetes default). |
+| mongodb.networkPolicy.extraIngress | list | `[]` | Additional ingress rules appended to the default backend→db and inter-pod rules |
 | mongodb.persistence.enabled | bool | `true` | Enable MongoDB data persistence using PVC |
 | mongodb.persistence.size | string | `"8Gi"` | PVC Storage size for MongoDB data volume |
 | mongodb.persistence.storageClass | string | `""` | PVC Storage Class for MongoDB data volume |
-| mongodb.podLabels | object | `{ app.kubernetes.io/role: database }` | Labels added to MongoDB pods (used by network policy) |
 | mongodb.podSecurityContext | object | `{}` | Set MongoDB pod security context |
 | mongodb.replicaSet.enabled | bool | `false` | Enable MongoDB replica set mode (standalone if false) |
 | mongodb.service.port | int | `27017` | MongoDB service port |
 | mongodb.service.type | string | `"ClusterIP"` | MongoDB service type |
-| mongodb.targetPlatform | string | `""` | Target platform for MongoDB deployment. Set to "openshift" for OpenShift compatibility, leave empty for standard Kubernetes. |
+| mongodb.targetPlatform | string | `""` | Target platform for MongoDB deployment. Set to "openshift" for OpenShift compatibility. |
 | nameOverride | string | `"orgbook-publisher"` | String to partially override the chart name |
-| networkPolicy.ingress.namespaceSelector | list | `[]` | Namespace selector for ingress network policy |
-| selectorLabels | object | `{}` | Additional selector labels applied to all resources |
+| networkPolicy.ingress.namespaceSelector | object | `{}` | Namespace selector labels for the backend ingress network policy |
 
 ----------------------------------------------
 Autogenerated from chart metadata using [helm-docs v1.14.2](https://github.com/norwoodj/helm-docs/releases/v1.14.2)
