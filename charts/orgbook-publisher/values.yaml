@@ -91,12 +91,6 @@ mongodb:
   # -- Enable bundled MongoDB subchart
   enabled: true
 
-  # -- Name of an existing secret containing custom-user MongoDB credentials.
-  # When set, the CloudPirates subchart will not generate its own credentials secret.
-  # The secret must contain keys matching mongodb.customUser.secretKeys (defaults:
-  # CUSTOM_USER, CUSTOM_PASSWORD, CUSTOM_DB).
-  existingSecret: ""
-
   image:
     # -- MongoDB image registry
     registry: docker.io
@@ -125,10 +119,10 @@ mongodb:
     database: "orgbook-publisher"
     # -- Name of an existing secret for custom-user credentials.
     # Leave empty to let the subchart generate its own credentials secret.
-    # When set, must match mongodb.existingSecret.
+    # When set, the subchart uses this secret instead of generating one, and the
+    # backend deployment reads credentials from this secret.
     existingSecret: ""
-    # -- Secret key names in the custom-user secret.
-    # Defaults match the CloudPirates subchart's generated secret keys.
+    # -- Secret key names in the custom-user secret. Defaults match the CloudPirates subchart's generated secret keys.
     secretKeys:
       name: "CUSTOM_USER"
       password: "CUSTOM_PASSWORD"

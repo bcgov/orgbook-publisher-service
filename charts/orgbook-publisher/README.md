@@ -47,11 +47,10 @@ An api server to register and manage credentials.
 | mongodb.commonLabels | object | `{ app.kubernetes.io/role: database }` | Labels added to all MongoDB resources |
 | mongodb.containerSecurityContext | object | `{}` | Set MongoDB container security context |
 | mongodb.customUser.database | string | `"orgbook-publisher"` | Name of the MongoDB database |
-| mongodb.customUser.existingSecret | string | `""` | Name of an existing secret for custom-user credentials. Leave empty to let the subchart generate its own credentials secret. When set, must match mongodb.existingSecret. |
+| mongodb.customUser.existingSecret | string | `""` | Name of an existing secret for custom-user credentials. Leave empty to let the subchart generate its own credentials secret. When set, the subchart uses this secret instead of generating one, and the backend deployment reads credentials from this secret. |
 | mongodb.customUser.name | string | `"orgbook-publisher"` | Name of the custom MongoDB user |
 | mongodb.customUser.secretKeys | object | `{"database":"CUSTOM_DB","name":"CUSTOM_USER","password":"CUSTOM_PASSWORD"}` | Secret key names in the custom-user secret. Defaults match the CloudPirates subchart's generated secret keys. |
 | mongodb.enabled | bool | `true` | Enable bundled MongoDB subchart |
-| mongodb.existingSecret | string | `""` | Name of an existing secret containing custom-user MongoDB credentials. When set, the CloudPirates subchart will not generate its own credentials secret. The secret must contain keys matching mongodb.customUser.secretKeys (defaults: CUSTOM_USER, CUSTOM_PASSWORD, CUSTOM_DB). |
 | mongodb.image.pullPolicy | string | `"IfNotPresent"` | MongoDB image pull policy |
 | mongodb.image.registry | string | `"docker.io"` | MongoDB image registry |
 | mongodb.image.repository | string | `"mongo"` | MongoDB image repository |

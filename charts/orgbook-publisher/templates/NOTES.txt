@@ -22,5 +22,5 @@ Thank you for installing {{ .Chart.Name }} v{{ .Chart.AppVersion }}.
   Retrieve the MongoDB password:
     kubectl get secret {{ include "backend.databaseSecretName" . }} \
       -n {{ .Release.Namespace }} \
-      -o jsonpath="{.data.{{ .Values.mongodb.customUser.secretKeys.password }}}" | base64 --decode
+      -o jsonpath="{.data['{{ .Values.mongodb.customUser.secretKeys.password }}']}" | base64 --decode
   {{- end }}

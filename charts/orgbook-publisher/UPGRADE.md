@@ -14,7 +14,7 @@ Starting with chart version `0.0.4`, the bundled MongoDB subchart has changed fr
 ### What Changed
 
 | | Bitnami (old) | CloudPirates (new) |
-|---|---|---|
+| --- | --- | --- |
 | Default architecture | `replicaset` | standalone |
 | MongoDB image | Bitnami custom image | `mongo:8.0` (official) |
 | Custom user creation | `auth.usernames[]` / `auth.databases[]` | init script via `customUser.*` |
@@ -129,7 +129,7 @@ Confirm the custom user was created by the init script:
 ```bash
 NEW_PASSWORD=$(kubectl get secret "${RELEASE}-mongodb-custom-user-secret" \
   -n "${NAMESPACE}" \
-  -o jsonpath="{.data.CUSTOM_PASSWORD}" | base64 --decode)
+  -o jsonpath="{.data['CUSTOM_PASSWORD']}" | base64 --decode)
 
 kubectl exec -it "${RELEASE}-mongodb-0" -n "${NAMESPACE}" -- \
   mongosh \
