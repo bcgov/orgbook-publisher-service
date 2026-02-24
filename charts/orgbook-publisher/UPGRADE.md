@@ -241,7 +241,6 @@ Then set in your values:
 
 ```yaml
 mongodb:
-  existingSecret: "my-mongodb-secret"
   customUser:
     existingSecret: "my-mongodb-secret"
 ```
