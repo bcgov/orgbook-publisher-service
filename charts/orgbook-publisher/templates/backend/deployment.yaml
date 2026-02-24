@@ -12,19 +12,27 @@ spec:
       {{- include "backend.selectorLabels" . | nindent 6 }}
   template:
     metadata:
+      {{- with .Values.backend.podAnnotations }}
       annotations:
-        {{- toYaml .Values.backend.podAnnotations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       labels:
         {{- include "backend.selectorLabels" . | nindent 8 }}
     spec:
+      {{- with .Values.backend.image.pullSecrets }}
       imagePullSecrets:
-        {{- toYaml .Values.backend.image.pullSecrets | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.backend.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ include "backend.fullname" . }}
+          {{- with .Values.backend.containerSecurityContext }}
           securityContext:
-            {{- toYaml .Values.backend.containerSecurityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
           env:
@@ -58,18 +66,20 @@ spec:
 
             # MONGODB
             - name: MONGO_HOST
-              value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"
+              value: {{ include "backend.mongodb.host" . | quote }}
             - name: MONGO_PORT
-              value: {{ .Values.mongodb.service.ports.mongodb | quote }}
-            - name: MONGO_USER
-              value: {{ first .Values.mongodb.auth.usernames }}
+              value: {{ include "backend.mongodb.port" . | quote }}
             - name: MONGO_DB
-              value: {{ first .Values.mongodb.auth.databases }}
+              value: {{ include "backend.mongodb.database" . | quote }}
+            {{- if include "backend.mongodb.authEnabled" . }}
+            - name: MONGO_USER
+              value: {{ include "backend.mongodb.username" . | quote }}
             - name: MONGO_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ include "backend.databaseSecretName" . }}
-                  key: mongodb-passwords
+                  key: {{ .Values.mongodb.customUser.secretKeys.password }}
+            {{- end }}
           ports:
             - name: api
               containerPort: {{ .Values.backend.service.apiPort }}
@@ -88,9 +98,15 @@ spec:
             initialDelaySeconds: 60
           resources:
             {{- toYaml .Values.backend.resources | nindent 12 }}
+      {{- with .Values.backend.nodeSelector }}
       nodeSelector:
-        {{- toYaml .Values.backend.nodeSelector | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.affinity }}
       affinity:
-        {{- toYaml .Values.backend.affinity | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.backend.tolerations }}
       tolerations:
-        {{- toYaml .Values.backend.tolerations | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
