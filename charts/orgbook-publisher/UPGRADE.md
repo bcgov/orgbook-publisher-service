@@ -246,5 +246,5 @@ mongodb:
     existingSecret: "my-mongodb-secret"
 ```
 
-The `mongodb-publisher` user password used in Step 1 can then be used directly
+The `orgbook-publisher` user password used in Step 1 can then be used directly
 as `CUSTOM_PASSWORD` so there is no need to change the application password.
