@@ -4,19 +4,19 @@ from app.plugins.traction import TractionController
 import requests
 
 
-class OrgbookPublisher:
+class RegistryPublisher:
     def __init__(self):
-        self.api = settings.ORGBOOK_API_URL
-        self.orgbook = settings.ORGBOOK_URL
-        self.vc_service = settings.ORGBOOK_VC_SERVICE
+        self.registry_url = settings.REGISTRY_URL
+        self.api = f"{settings.REGISTRY_URL}/api/v4" if settings.REGISTRY_URL else ""
+        self.vc_service = f"{settings.REGISTRY_URL}/api/vc" if settings.REGISTRY_URL else ""
 
     def fetch_buisness_info(self, identifier):
         r = requests.get(
-            f"{settings.ORGBOOK_API_URL}/search/topic?q={identifier}&inactive=false&revoked=false"
+            f"{self.api}/search/topic?q={identifier}&inactive=false&revoked=false"
         )
         buisness_info = r.json()["results"][0]
         return {
-            "id": f"{settings.ORGBOOK_URL}/entity/{identifier}/type/registration.registries.ca",
+            "id": f"{settings.REGISTRY_URL}/entity/{identifier}/type/registration.registries.ca",
             "name": buisness_info["names"][0]["text"],
         }
 

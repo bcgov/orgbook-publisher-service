@@ -1,6 +1,6 @@
-# Orgbook Publisher — Backend
+# UNTP Publisher — Backend
 
-FastAPI backend for the Orgbook Publisher service. See the [repository README](../README.md) for overview and operational docs.
+FastAPI backend for the UNTP Publisher service. See the [repository README](../README.md) for overview and operational docs.
 
 ## Setup
 
@@ -21,6 +21,6 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 From the repo root:
 
 ```bash
-docker build -t orgbook-publisher-service -f backend/Dockerfile backend/
-docker run -p 8000:8000 orgbook-publisher-service
+docker build -t untp-publisher-service -f backend/Dockerfile backend/
+docker run -p 8000:8000 untp-publisher-service
 ```

@@ -8,7 +8,7 @@ from app.models.mongodb import CredentialRecord
 from app.plugins.mongodb import MongoClient
 from config import settings
 from app.utils import timestamp
-from app.plugins.orgbook import OrgbookPublisher
+from app.plugins.registry import RegistryPublisher
 from app.plugins import (
     TractionController,
     PublisherRegistrar,
@@ -47,14 +47,14 @@ async def publish_credential(request_body: Publication):
             detail="Unregistered credential type",
         )
     
-    # Check if entity id provided exists in orgbook
+    # Check if entity id provided exists in the registry
     entity_id = options.get("entityId")
     try:
-        OrgbookPublisher().fetch_buisness_info(entity_id)
+        RegistryPublisher().fetch_buisness_info(entity_id)
     except:
         raise HTTPException(
             status_code=404,
-            detail=f"No orgbook registration found for {entity_id}",
+            detail=f"No registry registration found for {entity_id}",
         )
         
     # Check cardinality, returns hash if new issuance is required
@@ -83,9 +83,9 @@ async def publish_credential(request_body: Publication):
                 detail="Unexpected error occured while trying to issue the credential.",
             )
         
-        # Forward credential to Orgbook unless set in service only mode
-        if settings.ORGBOOK_SYNC:
-            await OrgbookPublisher().forward_credential(vc, credential_registration)
+        # Forward credential to registry unless set in service only mode
+        if settings.REGISTRY_SYNC:
+            await RegistryPublisher().forward_credential(vc, credential_registration)
         
         mongo.insert(
             "CredentialRecord",

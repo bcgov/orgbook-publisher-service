@@ -27,7 +27,7 @@ A successful response will return a 201 with a did document. The admin can confi
 At this point, a [PR should be opened](https://github.com/bcgov/digital-trust-toolkit/pulls) to address the issue and add this issuer to the [corresponding registry](https://github.com/bcgov/digital-trust-toolkit/tree/main/related_resources/registrations/issuers).
 
 ## Credential Type Registration
-The credential type registration is the most complex and critical component, enabling issuers to publish their data as Verifiable Credential to Orgbook.
+The credential type registration is the most complex and critical component, enabling issuers to publish their data as Verifiable Credentials via the UNTP Publisher to the configured registry.
 
 This will also begin with a gh issue, describing the credential to be issued, the data points contained in the credential and other associated metadata. 
 ```

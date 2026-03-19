@@ -68,7 +68,7 @@ class Measure(BaseModel):
 
     value: float
     unit: str = Field(
-        max_length="3"
+        max_length=3
     )  # from https://vocabulary.uncefact.org/UnitMeasureCode
 
 
