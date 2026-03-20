@@ -4,7 +4,7 @@ import requests
 from app.models.did_document import DidDocument, VerificationMethod, Service
 from app.models.credential import Credential
 from app.plugins import MongoClient, TractionController
-from app.plugins.orgbook import OrgbookPublisher
+from app.plugins.orgbook import OrgbookClient
 from app.plugins.untp import DigitalConformityCredential
 from app.utils import multikey_to_jwk
 from base58 import b58encode
@@ -251,7 +251,7 @@ class PublisherRegistrar:
                 == "DigitalConformityCredential"
             ):
                 # Add issuedToParty information based on Orgbook entity data
-                entity = OrgbookPublisher().fetch_buisness_info(entity_id)
+                entity = OrgbookClient().fetch_buisness_info(entity_id)
                 credential["credentialSubject"]["issuedToParty"] |= {
                     "id": entity["id"],
                     "name": entity["name"],

@@ -2,8 +2,8 @@ from config import settings
 import requests
 
 
-class OrgbookPublisher:
-    """Read-only OrgBook integration: entity lookup via search API (no credential push)."""
+class OrgbookClient:
+    """Read-only OrgBook HTTP client: entity lookup via search API (no credential push)."""
 
     def fetch_buisness_info(self, identifier):
         r = requests.get(
