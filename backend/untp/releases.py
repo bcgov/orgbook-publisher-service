@@ -1,56 +1,69 @@
 """
-UNTP Digital Conformity Credential (DCC) release metadata.
+UNTP vendored JSON: two URL → path maps under `untp/bundled/`.
 
-Canonical context URLs are the exact strings emitted in VC @context; bundled
-files are vendored snapshots for offline cache (see cache.py).
+- `BUNDLED_CONTEXTS`: JSON-LD @context URL → relative path (.jsonld)
+- `BUNDLED_SCHEMAS`: published JSON Schema artefact URL → relative path (.json)
+  (DCC under ``…/dcc/…``, DIA under ``…/dia/…`` per untp.unece.org).
 """
 
 from __future__ import annotations
 
-from typing import FrozenSet
-
-# semver -> { context_canonical_url, context_bundle_relpath, optional schemas }
-DCC_BY_SEMVER: dict[str, dict] = {
-    "0.6.0": {
-        "context_canonical_url": "https://test.uncefact.org/vocabulary/untp/dcc/0.6.0/",
-        "context_bundle_relpath": "v0.6.0/contexts/dcc.jsonld",
-    },
-    "0.6.1": {
-        "context_canonical_url": "https://test.uncefact.org/vocabulary/untp/dcc/0.6.1/",
-        "context_bundle_relpath": "v0.6.1/contexts/dcc.jsonld",
-    },
-    "0.7.0": {
-        "context_canonical_url": "https://vocabulary.uncefact.org/untp/0.7.0/context/",
-        "context_bundle_relpath": "v0.7.0/contexts/untp.jsonld",
-        "schemas": {
-            "ConformityCredential": "v0.7.0/schemas/ConformityCredential.json",
-            "ConformityAttestation": "v0.7.0/schemas/ConformityAttestation.json",
-        },
-    },
+BUNDLED_CONTEXTS: dict[str, str] = {
+    "https://vocabulary.uncefact.org/untp/0.7.0/context/": "v0.7.0/contexts/untp.jsonld",
 }
 
+BUNDLED_SCHEMAS: dict[str, str] = {
+    "https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityAttestation.json": "v0.7.0/schemas/ConformityAttestation.json",
+    "https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityCredential.json": "v0.7.0/schemas/ConformityCredential.json",
+    "https://untp.unece.org/artefacts/schema/v0.7.0/dia/DigitalIdentityAnchor.json": "v0.7.0/schemas/dia/DigitalIdentityAnchor.json",
+    "https://untp.unece.org/artefacts/schema/v0.7.0/dia/RegisteredIdentity.json": "v0.7.0/schemas/dia/RegisteredIdentity.json",
+}
 
-def normalize_semver(value: str) -> str:
-    return value.strip()
+_DCC_SCHEMA_ARTEFACT = "https://untp.unece.org/artefacts/schema/v{semver}/dcc/{name}.json"
+_DIA_SCHEMA_ARTEFACT = "https://untp.unece.org/artefacts/schema/v{semver}/dia/{name}.json"
 
 
-def supported_dcc_semvers() -> FrozenSet[str]:
-    return frozenset(DCC_BY_SEMVER.keys())
+def _context_url_by_semver() -> dict[str, str]:
+    """Map DCC semver → JSON-LD @context URL (semver taken from `v{semver}/…` bundle path)."""
+    out: dict[str, str] = {}
+    for url, relpath in BUNDLED_CONTEXTS.items():
+        prefix = relpath.split("/")[0]
+        if not prefix.startswith("v") or "." not in prefix[1:]:
+            raise ValueError(f"Expected v{{semver}}/… in bundle path, got {relpath!r}")
+        semver = prefix[1:]
+        if semver in out:
+            raise ValueError(f"Multiple bundled contexts for semver {semver!r}")
+        out[semver] = url
+    return out
 
 
-def require_dcc_semver(value: str) -> str:
-    v = normalize_semver(value)
-    if v not in DCC_BY_SEMVER:
-        allowed = ", ".join(sorted(DCC_BY_SEMVER))
+_CONTEXT_URL_BY_SEMVER: dict[str, str] = _context_url_by_semver()
+
+
+def _require_semver(value: str) -> str:
+    v = value.strip()
+    if v not in _CONTEXT_URL_BY_SEMVER:
+        allowed = ", ".join(sorted(_CONTEXT_URL_BY_SEMVER))
         raise ValueError(f"Unsupported UNTP DCC data model version {value!r}. Supported: {allowed}")
     return v
 
 
 def dcc_context_url(semver: str) -> str:
-    v = require_dcc_semver(semver)
-    return DCC_BY_SEMVER[v]["context_canonical_url"]
+    return _CONTEXT_URL_BY_SEMVER[_require_semver(semver)]
 
 
-def dcc_schema_paths(semver: str) -> dict[str, str]:
-    v = require_dcc_semver(semver)
-    return dict(DCC_BY_SEMVER[v].get("schemas") or {})
+def dcc_schema_artefact_url(semver: str, name: str) -> str:
+    v = _require_semver(semver)
+    url = _DCC_SCHEMA_ARTEFACT.format(semver=v, name=name)
+    if url not in BUNDLED_SCHEMAS:
+        raise KeyError(f"No DCC schema {name!r} for UNTP {v!r}")
+    return url
+
+
+def dia_schema_artefact_url(semver: str, name: str) -> str:
+    """Published URL for a Digital Identity Anchor JSON Schema (``…/dia/{name}.json``)."""
+    v = _require_semver(semver)
+    url = _DIA_SCHEMA_ARTEFACT.format(semver=v, name=name)
+    if url not in BUNDLED_SCHEMAS:
+        raise KeyError(f"No DIA schema {name!r} for UNTP {v!r}")
+    return url

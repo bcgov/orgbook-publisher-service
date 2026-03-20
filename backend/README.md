@@ -16,9 +16,9 @@ uv run python main.py
 uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-## UNTP bundled artefacts (DCC)
+## UNTP bundled artefacts (DCC + DIA)
 
-Vendored JSON-LD contexts for **0.6.0**, **0.6.1**, and **0.7.0** (plus v0.7.0 JSON Schemas) live under **`untp/bundled/`** (`v{semver}/contexts/`, `v{semver}/schemas/`). **`untp/bundled/bundle-map.json`** maps each canonical context URI and each `semver:schemaName` to a relative bundle path (kept in sync with `releases.py` when the cache loads). The **`untp`** package exposes `releases`, `bundle_map`, `cache.warm_cache()`, `get_context_document(url)`, and `get_schema(semver, name)`. The DCC plugin defaults the emitted context URL to **0.7.0** via `dcc_context_url("0.7.0")`.
+Vendored JSON lives under **`untp/bundled/`**. **`untp/releases.py`** defines **`BUNDLED_CONTEXTS`** and **`BUNDLED_SCHEMAS`** (DCC and [Digital Identity Anchor](https://untp.unece.org/docs/specification/DigitalIdentityAnchor) schemas). The DCC plugin uses **`dcc_context_url`** from **`untp`**; DIA schema URLs: **`dia_schema_artefact_url`**. Optional: **`untp.cache`** (`warm_cache`, `get_context_document`, `get_schema`, `get_dia_schema`).
 
 ## Docker
 
