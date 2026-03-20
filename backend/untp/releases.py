@@ -1,9 +1,12 @@
 """
 UNTP vendored JSON: two URL → path maps under `untp/bundled/`.
 
+Artefact files originate from the UNTP spec repo (``spec-untp/artefacts`` on GitLab);
+published copies use untp.unece.org URLs, which are the keys below.
+
 - `BUNDLED_CONTEXTS`: JSON-LD @context URL → relative path (.jsonld)
 - `BUNDLED_SCHEMAS`: published JSON Schema artefact URL → relative path (.json)
-  (DCC under ``…/dcc/…``, DIA under ``…/dia/…`` per untp.unece.org).
+  (DCC under ``…/dcc/…``, DIA under ``…/dia/…``).
 """
 
 from __future__ import annotations
