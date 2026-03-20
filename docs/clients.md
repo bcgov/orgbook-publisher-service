@@ -1,5 +1,5 @@
-# Publishing to Orgbook
-This is a documentation page containing instructions for various lines of business to publish data to Orgbook as Verifiable Credentials.
+# Publishing credentials
+Instructions for lines of business to obtain Verifiable Credentials from the publisher. OrgBook may be used to **resolve entities** (e.g. by `entityId`) when publishing; issued credentials are **not** forwarded to OrgBook for search.
 
 ## Integration
 ### Issuer registration

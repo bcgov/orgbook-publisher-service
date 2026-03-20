@@ -82,11 +82,7 @@ async def publish_credential(request_body: Publication):
                 status_code=500,
                 detail="Unexpected error occured while trying to issue the credential.",
             )
-        
-        # Forward credential to Orgbook unless set in service only mode
-        if settings.ORGBOOK_SYNC:
-            await OrgbookPublisher().forward_credential(vc, credential_registration)
-        
+
         mongo.insert(
             "CredentialRecord",
             CredentialRecord(

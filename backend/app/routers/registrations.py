@@ -16,7 +16,6 @@ from app.plugins import (
     PublisherRegistrar,
     OCAProcessor,
 )
-from app.plugins.orgbook import OrgbookPublisher
 import uuid
 import random
 import json
@@ -132,10 +131,6 @@ async def register_credential_type(request_body: CredentialRegistration):
         }
     ]
 
-    # Register credential type with Orgbook unless set in service only mode
-    if settings.ORGBOOK_SYNC:
-        await OrgbookPublisher().create_credential_type(credential_registration)
-    
     # Store credential type record
     try:
         mongo.insert(
