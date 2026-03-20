@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "contexts": {
+    "https://test.uncefact.org/vocabulary/untp/dcc/0.6.0/": "v0.6.0/contexts/dcc.jsonld",
+    "https://test.uncefact.org/vocabulary/untp/dcc/0.6.1/": "v0.6.1/contexts/dcc.jsonld",
+    "https://vocabulary.uncefact.org/untp/0.7.0/context/": "v0.7.0/contexts/untp.jsonld"
+  },
+  "schemas": {
+    "0.7.0:ConformityAttestation": "v0.7.0/schemas/ConformityAttestation.json",
+    "0.7.0:ConformityCredential": "v0.7.0/schemas/ConformityCredential.json"
+  }
+}

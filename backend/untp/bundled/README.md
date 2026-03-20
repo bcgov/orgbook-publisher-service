@@ -2,6 +2,8 @@
 
 Vendored snapshots for offline use. **Canonical URLs** in issued credentials must match `untp/releases.py`.
 
+**`bundle-map.json`** lists every JSON-LD context URI and every bundled schema (`semver:name`) → relative path under this directory. It is checked against `releases.py` when the artefact cache is warmed.
+
 Layout (repeat per semver patch line you support):
 
 ```text

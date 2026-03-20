@@ -11,6 +11,7 @@ import threading
 from pathlib import Path
 from typing import Any
 
+from untp import bundle_map
 from untp import releases
 
 _BUNDLE_ROOT = Path(__file__).resolve().parent / "bundled"
@@ -33,6 +34,7 @@ def load_all() -> dict[str, Any]:
     with _LOCK:
         if _LOADED is not None:
             return _LOADED
+        bundle_map.validate_bundle_map_file()
         contexts: dict[str, Any] = {}
         schemas: dict[tuple[str, str], Any] = {}
         for semver, meta in releases.DCC_BY_SEMVER.items():

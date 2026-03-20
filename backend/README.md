@@ -18,7 +18,7 @@ uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
 
 ## UNTP bundled artefacts (DCC)
 
-Vendored JSON-LD contexts for **0.6.0**, **0.6.1**, and **0.7.0** (plus v0.7.0 JSON Schemas) live under **`untp/bundled/`** (`v{semver}/contexts/`, `v{semver}/schemas/`). The **`untp`** package exposes `releases`, `cache.warm_cache()`, `get_context_document(url)`, and `get_schema(semver, name)`. The DCC plugin currently defaults the emitted context URL to **0.7.0** via `dcc_context_url("0.7.0")`.
+Vendored JSON-LD contexts for **0.6.0**, **0.6.1**, and **0.7.0** (plus v0.7.0 JSON Schemas) live under **`untp/bundled/`** (`v{semver}/contexts/`, `v{semver}/schemas/`). **`untp/bundled/bundle-map.json`** maps each canonical context URI and each `semver:schemaName` to a relative bundle path (kept in sync with `releases.py` when the cache loads). The **`untp`** package exposes `releases`, `bundle_map`, `cache.warm_cache()`, `get_context_document(url)`, and `get_schema(semver, name)`. The DCC plugin defaults the emitted context URL to **0.7.0** via `dcc_context_url("0.7.0")`.
 
 ## Docker
 
