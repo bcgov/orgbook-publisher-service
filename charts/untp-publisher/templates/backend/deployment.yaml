@@ -39,8 +39,8 @@ spec:
             # PUBLISHER INFO
             - name: DOMAIN
               value: {{ .Values.backend.host }}
-            - name: ORGBOOK_URL
-              value: {{ .Values.backend.environment.ORGBOOK_URL }}
+            - name: REGISTRY_URL
+              value: {{ .Values.backend.environment.REGISTRY_URL }}
             - name: PUBLISHER_MULTIKEY
               value: {{ .Values.backend.environment.PUBLISHER_MULTIKEY }}
             - name: ISSUER_REGISTRY_URL

@@ -1,5 +1,5 @@
-# Publishing to Orgbook
-This is a documentation page containing instructions for various lines of business to publish data to Orgbook as Verifiable Credentials.
+# Publishing with UNTP Publisher
+This is a documentation page containing instructions for various lines of business to publish data as Verifiable Credentials using the UNTP Publisher.
 
 ## Integration
 ### Issuer registration
@@ -21,7 +21,7 @@ This is a documentation page containing instructions for various lines of busine
 
 ### Credential publication
 #### By api
-1. Request an access token from the orgbook publisher
+1. Request an access token from the UNTP Publisher
     ```json
     {
         "client_id": "",

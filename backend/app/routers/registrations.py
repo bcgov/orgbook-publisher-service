@@ -16,7 +16,7 @@ from app.plugins import (
     PublisherRegistrar,
     OCAProcessor,
 )
-from app.plugins.orgbook import OrgbookPublisher
+from app.plugins.registry import RegistryPublisher
 import uuid
 import random
 import json
@@ -132,9 +132,9 @@ async def register_credential_type(request_body: CredentialRegistration):
         }
     ]
 
-    # Register credential type with Orgbook unless set in service only mode
-    if settings.ORGBOOK_SYNC:
-        await OrgbookPublisher().create_credential_type(credential_registration)
+    # Register credential type with registry unless set in service only mode
+    if settings.REGISTRY_SYNC:
+        await RegistryPublisher().create_credential_type(credential_registration)
     
     # Store credential type record
     try:
