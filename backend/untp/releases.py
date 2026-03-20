@@ -11,9 +11,13 @@ from typing import FrozenSet
 
 # semver -> { context_canonical_url, context_bundle_relpath, optional schemas }
 DCC_BY_SEMVER: dict[str, dict] = {
-    "0.5.0": {
-        "context_canonical_url": "https://test.uncefact.org/vocabulary/untp/dcc/0.5.0/",
-        "context_bundle_relpath": "v0.5.0/contexts/dcc.jsonld",
+    "0.6.0": {
+        "context_canonical_url": "https://test.uncefact.org/vocabulary/untp/dcc/0.6.0/",
+        "context_bundle_relpath": "v0.6.0/contexts/dcc.jsonld",
+    },
+    "0.6.1": {
+        "context_canonical_url": "https://test.uncefact.org/vocabulary/untp/dcc/0.6.1/",
+        "context_bundle_relpath": "v0.6.1/contexts/dcc.jsonld",
     },
     "0.7.0": {
         "context_canonical_url": "https://vocabulary.uncefact.org/untp/0.7.0/context/",
