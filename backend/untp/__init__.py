@@ -1,15 +1,13 @@
-"""UNTP bundle metadata (`untp.cache` is separate)."""
+"""UNTP bundle metadata from `untp.releases` (CONTEXT_BUNDLE, SCHEMA_BUNDLE)."""
 
 from untp.releases import (
-    BUNDLED_CONTEXTS,
-    BUNDLED_SCHEMAS,
-    dcc_context_url,
-    dia_schema_artefact_url,
+    CONTEXT_BUNDLE,
+    DEFAULT_DCC_CONTEXT_URL,
+    SCHEMA_BUNDLE,
 )
 
 __all__ = [
-    "BUNDLED_CONTEXTS",
-    "BUNDLED_SCHEMAS",
-    "dcc_context_url",
-    "dia_schema_artefact_url",
+    "CONTEXT_BUNDLE",
+    "DEFAULT_DCC_CONTEXT_URL",
+    "SCHEMA_BUNDLE",
 ]

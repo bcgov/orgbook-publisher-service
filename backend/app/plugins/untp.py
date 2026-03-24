@@ -1,15 +1,12 @@
 from app.models.untp import Product, Facility, ConformityAssessment, Regulation, ConformityAttestation, Party, IdentifierScheme, ConformityAssessmentScheme
 from app.plugins.soup import Soup
-from untp.releases import dcc_context_url
-
-# Default DCC JSON-LD context until issuance is wired to per-registration semver.
-_DEFAULT_DCC_SEMVER = "0.7.0"
+from untp.releases import DEFAULT_DCC_CONTEXT_URL
 
 
 class DigitalConformityCredential:
     def __init__(self):
         self.type = "DigitalConformityCredential"
-        self.context = dcc_context_url(_DEFAULT_DCC_SEMVER)
+        self.context = DEFAULT_DCC_CONTEXT_URL
 
     def get_legal_act_info(self, legal_act_url):
         legal_act_info = Soup(legal_act_url).legal_act_info()
