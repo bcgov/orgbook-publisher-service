@@ -1,15 +1,12 @@
 from app.models.untp import Product, Facility, ConformityAssessment, Regulation, ConformityAttestation, Party, IdentifierScheme, ConformityAssessmentScheme
 from app.plugins.soup import Soup
-
-UNTP_CONTEXTS = {
-    "DigitalConformityCredential": "https://test.uncefact.org/vocabulary/untp/dcc/0.5.0/"
-}
+from untp.releases import DEFAULT_DCC_CONTEXT_URL
 
 
 class DigitalConformityCredential:
     def __init__(self):
         self.type = "DigitalConformityCredential"
-        self.context = UNTP_CONTEXTS[self.type]
+        self.context = DEFAULT_DCC_CONTEXT_URL
 
     def get_legal_act_info(self, legal_act_url):
         legal_act_info = Soup(legal_act_url).legal_act_info()
