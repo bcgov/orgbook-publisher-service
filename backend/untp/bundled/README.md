@@ -4,12 +4,14 @@
 
 **Published mirrors:** we register the same files under the canonical URLs served with the public spec (e.g. [untp.unece.org artefacts](https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityCredential.json)) so wire-format `@context` / `$ref` strings stay stable.
 
-Paths are registered in **`untp/releases.py`**:
+Canonical URLs and file metadata are defined in **`untp/releases.py`**:
 
-- **`BUNDLED_CONTEXTS`** — JSON-LD `@context` URL → path under this directory (`.jsonld`)
-- **`BUNDLED_SCHEMAS`** — published schema artefact URL → path (`.json`)
-  - DCC: […/dcc/…](https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityCredential.json)
-  - DIA: […/dia/…](https://untp.unece.org/docs/specification/DigitalIdentityAnchor) ([DigitalIdentityAnchor.json](https://untp.unece.org/artefacts/schema/v0.7.0/dia/DigitalIdentityAnchor.json), [RegisteredIdentity.json](https://untp.unece.org/artefacts/schema/v0.7.0/dia/RegisteredIdentity.json))
+- **`CONTEXT_BUNDLE`** — JSON-LD `@context` base URL → `{ "path", "digest" }` (paths are `.jsonld` under this directory)
+- **`SCHEMA_BUNDLE`** — published schema artefact URL → `{ "path", "digest" }` (paths are `.json`)
+  - DCC: e.g. [ConformityCredential.json](https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityCredential.json)
+  - DIA: [DigitalIdentityAnchor.json](https://untp.unece.org/artefacts/schema/v0.7.0/dia/DigitalIdentityAnchor.json), [RegisteredIdentity.json](https://untp.unece.org/artefacts/schema/v0.7.0/dia/RegisteredIdentity.json)
+
+**`DEFAULT_DCC_CONTEXT_URL`** in the same module is the context URL the DCC plugin uses by default (must match a key in `CONTEXT_BUNDLE`).
 
 ```text
 v{semver}/
@@ -18,4 +20,4 @@ v{semver}/
     dia/   # Digital Identity Anchor (optional)
 ```
 
-Add files on disk, then add one line to the appropriate map.
+Add files on disk, then add an entry to the appropriate bundle (recompute **`digest`** as `sha256:` + hex of the file bytes).
