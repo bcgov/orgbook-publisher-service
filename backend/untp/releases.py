@@ -2,12 +2,17 @@
 UNTP bundled artefacts: canonical URL -> local relative file path.
 
 The files live under ``untp/bundled/`` and are addressed by their published
-UNTP URLs (contexts and schema artefacts).
+UNTP URLs (contexts and schema artefacts). Includes W3C Verifiable Credentials
+Data Model v2.0 at ``https://www.w3.org/ns/credentials/v2`` for offline JSON-LD.
 """
 
 from __future__ import annotations
 
 CONTEXT_BUNDLE: dict[str, dict[str, str]] = {
+    "https://www.w3.org/ns/credentials/v2": {
+        "path": "v0.7.0/contexts/credentials-v2.jsonld",
+        "digest": "sha256:59955ced6697d61e03f2b2556febe5308ab16842846f5b586d7f1f7adec92734",
+    },
     "https://vocabulary.uncefact.org/untp/0.7.0/context/": {
         "path": "v0.7.0/contexts/untp.jsonld",
         "digest": "sha256:e99627e9ddd159eb0d80c8bba9634ca9099597cc547a37246ad3a4ee6384687e",
