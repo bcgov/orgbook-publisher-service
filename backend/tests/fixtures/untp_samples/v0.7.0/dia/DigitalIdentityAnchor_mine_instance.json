@@ -1,0 +1,58 @@
+{
+  "type": [
+    "DigitalIdentityAnchor",
+    "VerifiableCredential"
+  ],
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://vocabulary.uncefact.org/untp/0.7.0/context/"
+  ],
+  "id": "https://credentials.mining-register.gov.zm/dia/zm-nw-cu-0012",
+  "issuer": {
+    "type": [
+      "CredentialIssuer"
+    ],
+    "id": "did:web:mining-register.gov.zm",
+    "name": "Zambia Ministry of Mines — Mining Cadastre Office",
+    "issuerAlsoKnownAs": [
+      {
+        "type": [
+          "Party"
+        ],
+        "id": "https://mining-register.gov.zm",
+        "name": "Zambia Mining Cadastre Office"
+      }
+    ]
+  },
+  "validFrom": "2025-01-01T00:00:00Z",
+  "validUntil": "2028-12-31T00:00:00Z",
+  "name": "Mining Facility Identity Anchor — Sample Copper Mine",
+  "credentialSubject": {
+    "type": [
+      "RegisteredIdentity"
+    ],
+    "id": "did:web:sample-mine.example.com",
+    "registeredName": "Sample Copper Mine",
+    "registeredId": "ZM-NW-CU-0012",
+    "registeredDate": "2003-09-22",
+    "publicInformation": "https://mining-register.gov.zm/facilities/ZM-NW-CU-0012",
+    "schemeId": {
+      "type": [
+        "IdentifierScheme"
+      ],
+      "id": "https://mining-register.gov.zm",
+      "name": "Zambia Mining Cadastre"
+    },
+    "registrar": {
+      "type": [
+        "Party"
+      ],
+      "id": "https://mining-register.gov.zm",
+      "name": "Zambia Ministry of Mines"
+    },
+    "registerType": "facility",
+    "registrationScope": [
+      "https://mining-register.gov.zm/LicenceType?Id=large-scale-mining"
+    ]
+  }
+}
