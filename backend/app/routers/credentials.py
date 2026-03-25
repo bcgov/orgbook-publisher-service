@@ -8,7 +8,7 @@ from app.models.mongodb import CredentialRecord
 from app.plugins.mongodb import MongoClient
 from config import settings
 from app.utils import timestamp
-from app.plugins.orgbook import OrgbookPublisher
+from app.plugins.orgbook import OrgbookClient
 from app.plugins import (
     TractionController,
     PublisherRegistrar,
@@ -50,7 +50,7 @@ async def publish_credential(request_body: Publication):
     # Check if entity id provided exists in orgbook
     entity_id = options.get("entityId")
     try:
-        OrgbookPublisher().fetch_buisness_info(entity_id)
+        OrgbookClient().fetch_buisness_info(entity_id)
     except:
         raise HTTPException(
             status_code=404,
@@ -82,11 +82,7 @@ async def publish_credential(request_body: Publication):
                 status_code=500,
                 detail="Unexpected error occured while trying to issue the credential.",
             )
-        
-        # Forward credential to Orgbook unless set in service only mode
-        if settings.ORGBOOK_SYNC:
-            await OrgbookPublisher().forward_credential(vc, credential_registration)
-        
+
         mongo.insert(
             "CredentialRecord",
             CredentialRecord(
