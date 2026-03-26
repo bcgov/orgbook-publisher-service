@@ -1,12 +1,17 @@
 """
-UNTP bundled artefacts: canonical URL -> local relative file path.
+Bundled artefacts: canonical URL -> local relative file path.
 
-The files live under ``untp/bundled/`` and are addressed by their published
-UNTP URLs (contexts and schema artefacts). Includes W3C Verifiable Credentials
-Data Model v2.0 at ``https://www.w3.org/ns/credentials/v2`` for offline JSON-LD.
+The files live under ``untp/bundled/``. Schema URLs are UNTP artefacts; context URLs
+include UNTP vocabulary and W3C VCDM 2.0 (for offline JSON-LD processing).
 """
 
 from __future__ import annotations
+
+from collections.abc import Mapping
+from typing import Any
+
+# Directory under ``untp/bundled/`` (schemas, contexts, digests for this UNTP release).
+BUNDLE_VERSION: str = "0.7.0"
 
 CONTEXT_BUNDLE: dict[str, dict[str, str]] = {
     "https://www.w3.org/ns/credentials/v2": {
@@ -19,6 +24,30 @@ CONTEXT_BUNDLE: dict[str, dict[str, str]] = {
     },
 }
 
+
+def bundled_context_digests_for_document(data: Mapping[str, Any]) -> dict[str, str]:
+    """
+    For each string URL in ``@context`` that appears in :data:`CONTEXT_BUNDLE`,
+    return that URL mapped to its registered ``digest`` (``sha256:`` hex).
+    """
+    ctx = data.get("@context")
+    if ctx is None:
+        return {}
+    urls: list[str] = []
+    if isinstance(ctx, str):
+        urls = [ctx]
+    elif isinstance(ctx, list):
+        for item in ctx:
+            if isinstance(item, str):
+                urls.append(item)
+    out: dict[str, str] = {}
+    for url in urls:
+        entry = CONTEXT_BUNDLE.get(url)
+        if entry is not None:
+            out[url] = entry["digest"]
+    return out
+
+
 SCHEMA_BUNDLE: dict[str, dict[str, str]] = {
     "https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityAttestation.json": {
         "path": "v0.7.0/schemas/ConformityAttestation.json",
@@ -27,14 +56,6 @@ SCHEMA_BUNDLE: dict[str, dict[str, str]] = {
     "https://untp.unece.org/artefacts/schema/v0.7.0/dcc/ConformityCredential.json": {
         "path": "v0.7.0/schemas/ConformityCredential.json",
         "digest": "sha256:68e488ea1c2df8ff868ba63414a215087c2fb737b1b8f84909497ff32ee69f63",
-    },
-    "https://untp.unece.org/artefacts/schema/v0.7.0/dia/DigitalIdentityAnchor.json": {
-        "path": "v0.7.0/schemas/dia/DigitalIdentityAnchor.json",
-        "digest": "sha256:188358b324050f6d2b00378020e1f1cee0c87dc0462cb42d513dfc9685b7cc74",
-    },
-    "https://untp.unece.org/artefacts/schema/v0.7.0/dia/RegisteredIdentity.json": {
-        "path": "v0.7.0/schemas/dia/RegisteredIdentity.json",
-        "digest": "sha256:ce8120f1198ae405de08d69bc55d17d3f04d5c0bc5e3867deff33cf2ea040b75",
     },
 }
 
