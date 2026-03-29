@@ -1,10 +1,15 @@
 #!/usr/bin/env python3
 """
-Regenerate ``app.models.untp.v0_7_0`` Pydantic models from bundled UNTP JSON Schema.
+Regenerate UNTP v0.7.0 DCC Pydantic models from bundled JSON Schema.
 
-``datamodel-code-generator`` cannot parse ``prefixItems`` on ``@context`` in the upstream
-schemas; this script strips ``prefixItems`` recursively in a temp copy, runs codegen,
-then renames the root ``Model`` class in each output file.
+Only **ConformityCredential.json** is fed to codegen: it already inlines
+``$defs.ConformityAttestation``, so ``DigitalConformityCredential`` and
+``ConformityAttestation`` (and shared enums like ``AssessorLevel``) land in
+**one** module — no second file duplicated from ``ConformityAttestation.json``.
+
+``datamodel-codegen`` cannot parse ``prefixItems`` on ``@context``; this script
+strips ``prefixItems`` recursively in a temp copy, runs codegen, then renames
+the root ``Model`` class.
 
 Usage (from ``backend/``)::
 
@@ -35,24 +40,6 @@ JOBS: list[tuple[Path, Path, str, str]] = [
         OUT / "dcc/digital_conformity_credential.py",
         "ConformityCredential.json",
         "DigitalConformityCredential",
-    ),
-    (
-        Path("ConformityAttestation.json"),
-        OUT / "dcc/conformity_attestation.py",
-        "ConformityAttestation.json",
-        "ConformityAttestation",
-    ),
-    (
-        Path("dia/DigitalIdentityAnchor.json"),
-        OUT / "dia/digital_identity_anchor.py",
-        "DigitalIdentityAnchor.json",
-        "DigitalIdentityAnchor",
-    ),
-    (
-        Path("dia/RegisteredIdentity.json"),
-        OUT / "dia/registered_identity.py",
-        "RegisteredIdentity.json",
-        "RegisteredIdentity",
     ),
 ]
 
@@ -99,48 +86,35 @@ def fix_codegen_empty_type_wrappers(path: Path) -> None:
     ``list[str]`` for JSON Schema ``type`` arrays; real JSON uses plain lists, which
     then fail validation. Replace with ``list[str]`` defaults only.
     """
-    if path.name == "digital_conformity_credential.py":
-        text = path.read_text(encoding="utf-8")
-        text = re.sub(
-            r"\nclass Type\(BaseModel\):\n    model_config = ConfigDict\(\n        populate_by_name=True,\n    \)\n\n",
-            "\n",
-            text,
-            count=1,
-        )
-        text = re.sub(
-            r"\nclass Type3\(BaseModel\):\n    model_config = ConfigDict\(\n        populate_by_name=True,\n    \)\n\n",
-            "\n",
-            text,
-            count=1,
-        )
-        text = text.replace(
-            "type: list[str] | Type | None = Field(\n        default_factory=lambda: Type.model_validate([\"CredentialIssuer\"])\n    )",
-            'type: list[str] | None = Field(\n        default_factory=lambda: ["CredentialIssuer"]\n    )',
-        )
-        text = text.replace(
-            "type: list[str] | Type | None = Field(\n        default_factory=lambda: Type.model_validate(\n            [\"DigitalConformityCredential\", \"VerifiableCredential\"]\n        )\n    )",
-            'type: list[str] | None = Field(\n        default_factory=lambda: [\n            "DigitalConformityCredential",\n            "VerifiableCredential",\n        ]\n    )',
-        )
-        text = re.sub(
-            r"type: list\[str\] \| Type3 \| None = Field\(\s*\n\s*default_factory=lambda: Type3\.model_validate\(\[\"([^\"]+)\"\]\)\s*\n\s*\)",
-            r'type: list[str] | None = Field(\n        default_factory=lambda: ["\1"]\n    )',
-            text,
-        )
-        path.write_text(text, encoding="utf-8")
-    elif path.name == "conformity_attestation.py":
-        text = path.read_text(encoding="utf-8")
-        text = re.sub(
-            r"\nclass Type\(BaseModel\):\n    model_config = ConfigDict\(\n        populate_by_name=True,\n    \)\n\n",
-            "\n",
-            text,
-            count=1,
-        )
-        text = re.sub(
-            r"type: list\[str\] \| Type \| None = Field\(\s*\n\s*default_factory=lambda: Type\.model_validate\(\[\"([^\"]+)\"\]\)\s*\n\s*\)",
-            r'type: list[str] | None = Field(\n        default_factory=lambda: ["\1"]\n    )',
-            text,
-        )
-        path.write_text(text, encoding="utf-8")
+    if path.name != "digital_conformity_credential.py":
+        return
+    text = path.read_text(encoding="utf-8")
+    text = re.sub(
+        r"\nclass Type\(BaseModel\):\n    model_config = ConfigDict\(\n        populate_by_name=True,\n    \)\n\n",
+        "\n",
+        text,
+        count=1,
+    )
+    text = re.sub(
+        r"\nclass Type3\(BaseModel\):\n    model_config = ConfigDict\(\n        populate_by_name=True,\n    \)\n\n",
+        "\n",
+        text,
+        count=1,
+    )
+    text = text.replace(
+        "type: list[str] | Type | None = Field(\n        default_factory=lambda: Type.model_validate([\"CredentialIssuer\"])\n    )",
+        'type: list[str] | None = Field(\n        default_factory=lambda: ["CredentialIssuer"]\n    )',
+    )
+    text = text.replace(
+        "type: list[str] | Type | None = Field(\n        default_factory=lambda: Type.model_validate(\n            [\"DigitalConformityCredential\", \"VerifiableCredential\"]\n        )\n    )",
+        'type: list[str] | None = Field(\n        default_factory=lambda: [\n            "DigitalConformityCredential",\n            "VerifiableCredential",\n        ]\n    )',
+    )
+    text = re.sub(
+        r"type: list\[str\] \| Type3 \| None = Field\(\s*\n\s*default_factory=lambda: Type3\.model_validate\(\[\"([^\"]+)\"\]\)\s*\n\s*\)",
+        r'type: list[str] | None = Field(\n        default_factory=lambda: ["\1"]\n    )',
+        text,
+    )
+    path.write_text(text, encoding="utf-8")
 
 
 def main() -> None:
@@ -199,7 +173,7 @@ def main() -> None:
             out_path.write_text(text, encoding="utf-8")
             fix_codegen_empty_type_wrappers(out_path)
 
-    print("Wrote:", OUT)
+    print("Wrote:", OUT / "dcc/digital_conformity_credential.py")
 
 
 if __name__ == "__main__":

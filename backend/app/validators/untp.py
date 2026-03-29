@@ -187,7 +187,7 @@ def _pydantic_model_for_kind(kind: UntpArtefactKind) -> type[BaseModel]:
 
         return DigitalConformityCredential
     if kind is UntpArtefactKind.DCC_ATTESTATION:
-        from app.models.untp.v0_7_0.dcc.conformity_attestation import (
+        from app.models.untp.v0_7_0.dcc.digital_conformity_credential import (
             ConformityAttestation,
         )
 
