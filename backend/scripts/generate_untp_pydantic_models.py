@@ -37,7 +37,7 @@ HEADER = (
 JOBS: list[tuple[Path, Path, str, str]] = [
     (
         Path("ConformityCredential.json"),
-        OUT / "dcc/digital_conformity_credential.py",
+        OUT / "dcc.py",
         "ConformityCredential.json",
         "DigitalConformityCredential",
     ),
@@ -86,7 +86,7 @@ def fix_codegen_empty_type_wrappers(path: Path) -> None:
     ``list[str]`` for JSON Schema ``type`` arrays; real JSON uses plain lists, which
     then fail validation. Replace with ``list[str]`` defaults only.
     """
-    if path.name != "digital_conformity_credential.py":
+    if path.name != "dcc.py":
         return
     text = path.read_text(encoding="utf-8")
     text = re.sub(
@@ -173,7 +173,7 @@ def main() -> None:
             out_path.write_text(text, encoding="utf-8")
             fix_codegen_empty_type_wrappers(out_path)
 
-    print("Wrote:", OUT / "dcc/digital_conformity_credential.py")
+    print("Wrote:", OUT / "dcc.py")
 
 
 if __name__ == "__main__":
