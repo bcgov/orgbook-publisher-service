@@ -181,15 +181,11 @@ def validate_untp_json_ld(data: Mapping[str, Any]) -> str:
 
 def _pydantic_model_for_kind(kind: UntpArtefactKind) -> type[BaseModel]:
     if kind is UntpArtefactKind.DCC_CREDENTIAL:
-        from app.models.untp.v0_7_0.dcc.digital_conformity_credential import (
-            DigitalConformityCredential,
-        )
+        from app.models.untp.v0_7_0.dcc import DigitalConformityCredential
 
         return DigitalConformityCredential
     if kind is UntpArtefactKind.DCC_ATTESTATION:
-        from app.models.untp.v0_7_0.dcc.conformity_attestation import (
-            ConformityAttestation,
-        )
+        from app.models.untp.v0_7_0.dcc import ConformityAttestation
 
         return ConformityAttestation
     raise UntpValidationError(f"no Pydantic model mapped for {kind!r}")
