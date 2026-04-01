@@ -13,8 +13,17 @@ uv sync
 ```bash
 uv run python main.py
 # or
-uv run uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uv run uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
+
+## Test suite mode (`TEST_SUITE`)
+
+Set **`TEST_SUITE=true`** in the environment to run a **minimal** app: only **`GET /server/status`** and **`POST /test-suite/validate`**. The publisher API (auth, registrations, credentials, static) is **not** registered. Use this for isolated UNTP validation in CI or harnesses.
+
+- **`POST /test-suite/validate`** — JSON body is the UNTP document; optional query **`kind`** (`dcc_credential` or `dcc_attestation`) skips automatic `type` detection.
+- Response: **`success`**, **`validation_checks`** (same structure as the validator’s per-check report), **`artefact_kind`**, and **`error`** when validation fails.
+
+When **`TEST_SUITE`** is unset or false, **`/test-suite/*`** routes are omitted entirely.
 
 ## UNTP bundled artefacts (DCC + DIA)
 

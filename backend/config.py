@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     PROJECT_TITLE: str = "Orgbook Publisher"
     PROJECT_VERSION: str = "v0"
 
+    #: When ``True``, the app exposes only ``/server/status`` and ``/test-suite/*`` (no auth,
+    #: credentials, or publisher API). Use for validator CI / isolated test deployments.
+    TEST_SUITE: bool = Field(default=False)
+
     LOG_LEVEL: int = logging.INFO
     LOG_FORMAT: str = (
         "%(asctime)s | %(levelname)-8s | %(module)s:%(funcName)s:%(lineno)d | %(message)s"
